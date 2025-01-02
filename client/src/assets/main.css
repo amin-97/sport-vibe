@@ -1,35 +1,59 @@
-@import './base.css';
+/* src/assets/main.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
+@layer base {
   body {
-    display: flex;
-    place-items: center;
+    @apply bg-gray-50 text-gray-900 antialiased;
   }
+  h1 {
+    @apply text-4xl font-bold mb-4 tracking-tight;
+  }
+  h2 {
+    @apply text-2xl font-bold mb-3 tracking-tight;
+  }
+  h3 {
+    @apply text-xl font-bold mb-2 tracking-tight;
+  }
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+@layer components {
+  .btn {
+    @apply inline-flex items-center px-4 py-2 rounded-md font-medium transition-all duration-200;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary/90 shadow-sm hover:shadow;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary/90 shadow-sm hover:shadow;
+  }
+  .btn-accent {
+    @apply bg-accent text-white hover:bg-accent/90 shadow-sm hover:shadow;
+  }
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6 transition-all duration-300;
+  }
+  .link-hover {
+    @apply inline-flex items-center text-accent hover:text-primary transition-colors;
+  }
+  .section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Custom animations */
+@layer utilities {
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
 }
