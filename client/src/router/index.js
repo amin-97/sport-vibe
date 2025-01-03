@@ -10,6 +10,7 @@ import WrestlingNews from '@/views/wrestling/WrestlingNews.vue'
 import WrestlingResults from '@/views/wrestling/WrestlingResults.vue'
 import WrestlingEditorials from '@/views/wrestling/WrestlingEditorials.vue'
 import NotFound from '@/views/NotFound.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,25 @@ const router = createRouter({
       name: 'wrestlingEditorials',
       component: WrestlingEditorials,
     },
+    // Admin Routes
+    {
+      path: '/admin/write/results',
+      name: 'writeResults',
+      component: () => import('../views/admin/WriteResultsView.vue'),
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/write/article',
+      name: 'writeArticle',
+      component: () => import('../views/admin/WriteArticleView.vue'),
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/write/editorial',
+      name: 'writeEditorial',
+      component: () => import('../views/admin/WriteEditorialView.vue'),
+      meta: { requiresAdmin: true },
+    },
     // 404 Route
     {
       path: '/:pathMatch(.*)*',
@@ -68,6 +88,17 @@ const router = createRouter({
       component: NotFound,
     },
   ],
+})
+
+// Navigation guard for admin routes
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    next({ name: 'home' }) // Redirect non-admin users to home
+  } else {
+    next()
+  }
 })
 
 export default router
