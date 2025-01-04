@@ -1,4 +1,4 @@
-// src/components/HeroSlideshow.vue
+<!-- // src/components/HeroSlideshow.vue -->
 <template>
   <div class="bg-white rounded-lg shadow-lg p-4">
     <!-- Tab Buttons -->

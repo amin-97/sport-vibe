@@ -1,40 +1,28 @@
 // src/stores/auth.js
-import axios from 'axios'
-
-// Configure axios
-axios.defaults.baseURL = 'http://localhost:5000'
-axios.defaults.withCredentials = true
-axios.defaults.headers.common['Content-Type'] = 'application/json'
-
-// // src/stores/auth.js
 import { defineStore } from 'pinia'
 import { auth, googleProvider } from '@/config/firebase'
-import { signInWithPopup, signOut } from 'firebase/auth'
-// import axios from 'axios'
-
-// // Add this at the top of the file
-// axios.defaults.baseURL = 'http://localhost:5000' // or your backend URL
+import { signInWithPopup } from 'firebase/auth'
+import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
+    token: null,
     loading: false,
     error: null,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.token,
     isAdmin: (state) => state.user?.isAdmin || false,
   },
 
   actions: {
     async signInWithGoogle() {
-      this.loading = true
-      this.error = null
       try {
         const result = await signInWithPopup(auth, googleProvider)
 
-        // Send user data to your backend to create/update user
+        // Send user data to backend
         const { data } = await axios.post('/api/auth/google', {
           googleId: result.user.uid,
           email: result.user.email,
@@ -42,26 +30,43 @@ export const useAuthStore = defineStore('auth', {
           photoURL: result.user.photoURL,
         })
 
+        // Save user and token
         this.user = data.user
+        this.token = data.token
+
+        // Set token for future requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
       } catch (error) {
-        this.error = error.message
         console.error('Sign in error:', error)
-      } finally {
-        this.loading = false
+        this.error = error.message
       }
     },
 
     async signOut() {
       try {
-        await signOut(auth)
+        await auth.signOut()
         this.user = null
+        this.token = null
+        delete axios.defaults.headers.common['Authorization']
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
       } catch (error) {
         console.error('Sign out error:', error)
       }
     },
 
-    setUser(user) {
-      this.user = user
+    // Initialize auth state from localStorage
+    initializeAuth() {
+      const token = localStorage.getItem('token')
+      const user = localStorage.getItem('user')
+      if (token && user) {
+        this.token = token
+        this.user = JSON.parse(user)
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      }
     },
   },
 })

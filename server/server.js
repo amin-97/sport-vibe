@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
+const testRoutes = require("./routes/test/s3test");
+
 // Load environment variables
 dotenv.config();
 
@@ -32,6 +34,16 @@ mongoose
 // Routes
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes);
+app.use("/api/test", testRoutes);
+
+const wrestlingResultsRoutes = require("./routes/api/wrestlingResults");
+app.use("/api/wrestling-results", wrestlingResultsRoutes);
+
+const newsRoutes = require("./routes/api/news");
+app.use("/api/news", newsRoutes);
+
+const editorialRoutes = require("./routes/api/editorials");
+app.use("/api/editorials", editorialRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

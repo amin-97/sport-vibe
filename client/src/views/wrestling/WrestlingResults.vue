@@ -1,4 +1,38 @@
-// src/views/wrestling/ResultsView.vue
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
+import { format } from 'date-fns'
+
+const results = ref([])
+const selectedPromotion = ref('all')
+const loading = ref(false)
+const error = ref(null)
+
+const formatDate = (date) => {
+  return format(new Date(date), 'MMMM dd, yyyy')
+}
+
+const filteredResults = computed(() => {
+  if (selectedPromotion.value === 'all') return results.value
+  return results.value.filter((result) => result.category.toLowerCase() === selectedPromotion.value)
+})
+
+const fetchResults = async () => {
+  try {
+    loading.value = true
+    const { data } = await axios.get('/api/results')
+    results.value = data
+  } catch (err) {
+    error.value = 'Failed to fetch results'
+    console.error('Error:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchResults)
+</script>
+
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="text-center mb-12">
@@ -6,125 +40,88 @@
       <p class="mt-4 text-xl text-gray-600">Latest match results and event coverage</p>
     </div>
 
-    <!-- Results Filter -->
-    <div class="mb-8 flex flex-wrap gap-4">
-      <button class="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90">
-        All Events
-      </button>
-      <button class="px-4 py-2 rounded-md bg-white text-gray-700 hover:bg-gray-50">WWE</button>
-      <button class="px-4 py-2 rounded-md bg-white text-gray-700 hover:bg-gray-50">AEW</button>
-      <button class="px-4 py-2 rounded-md bg-white text-gray-700 hover:bg-gray-50">
-        PPV Events
-      </button>
-      <button class="px-4 py-2 rounded-md bg-white text-gray-700 hover:bg-gray-50">
-        Weekly Shows
+    <!-- Promotion Filter -->
+    <div class="mb-8 flex space-x-4">
+      <button
+        v-for="promotion in ['all', 'wwe', 'aew']"
+        :key="promotion"
+        @click="selectedPromotion = promotion"
+        :class="[
+          'px-4 py-2 rounded-md',
+          selectedPromotion === promotion
+            ? 'bg-primary text-white'
+            : 'bg-white text-gray-700 hover:bg-gray-50',
+        ]"
+      >
+        {{ promotion === 'all' ? 'All Events' : promotion.toUpperCase() }}
       </button>
     </div>
 
-    <!-- Results List -->
-    <div class="space-y-8">
-      <!-- Event Card -->
-      <div v-for="i in 5" :key="i" class="bg-white shadow-lg rounded-lg overflow-hidden">
-        <!-- Event Header -->
-        <div class="bg-gray-50 p-6 border-b">
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900">Event Name {{ i }}</h2>
-              <div class="mt-2 flex items-center gap-4 text-gray-600">
-                <span class="flex items-center">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  January {{ i + 20 }}, 2024
-                </span>
-                <span class="flex items-center">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  Arena Location
-                </span>
-              </div>
-            </div>
-            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
-              >WWE</span
-            >
-          </div>
-        </div>
+    <!-- Loading State -->
+    <div v-if="loading" class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+    </div>
 
-        <!-- Match Results -->
-        <div class="p-6 space-y-6">
-          <!-- Main Event -->
-          <div class="border-b pb-6">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-medium text-primary">Main Event</span>
-              <span class="text-sm text-gray-500">Championship Match</span>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Roman Reigns vs Seth Rollins</h3>
-            <div class="flex items-center justify-between">
-              <span class="text-gray-600">Winner: Roman Reigns</span>
-              <span class="text-gray-500 text-sm">22:45</span>
-            </div>
-            <p class="mt-2 text-gray-600 text-sm">Via pinfall after a Spear</p>
-          </div>
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-12 text-red-600">
+      {{ error }}
+    </div>
 
-          <!-- Other Matches -->
-          <div v-for="j in 3" :key="j" class="border-b last:border-0 pb-4 last:pb-0">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-medium text-gray-700">Match {{ j }}</span>
-              <span class="text-sm text-gray-500">Singles Match</span>
-            </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Wrestler A vs Wrestler B</h3>
-            <div class="flex items-center justify-between">
-              <span class="text-gray-600">Winner: Wrestler A</span>
-              <span class="text-gray-500 text-sm">15:30</span>
-            </div>
-            <p class="mt-2 text-gray-600 text-sm">Clean victory via submission</p>
-          </div>
-        </div>
-
-        <!-- Event Footer -->
-        <div class="bg-gray-50 px-6 py-4 border-t">
+    <!-- Results Grid -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <router-link
+        v-for="result in filteredResults"
+        :key="result._id"
+        :to="`/wrestling/results/${result._id}`"
+        class="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+      >
+        <img
+          :src="result.image?.url || '/placeholder-image.png'"
+          :alt="result.title"
+          class="w-full h-48 object-cover"
+        />
+        <div class="p-6">
           <div class="flex justify-between items-center">
-            <div class="text-sm text-gray-600">Attendance: 15,000</div>
-            <button class="text-primary hover:text-primary/90 font-medium text-sm">
-              Full Event Coverage →
-            </button>
+            <h2 class="text-xl font-bold text-gray-900">{{ result.title }}</h2>
+            <span
+              class="px-3 py-1 rounded-full text-sm font-medium"
+              :class="
+                result.category === 'wwe' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+              "
+            >
+              {{ result.category.toUpperCase() }}
+            </span>
+          </div>
+
+          <div class="mt-4 flex items-center gap-2 text-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            {{ formatDate(result.createdAt) }}
+          </div>
+
+          <p class="mt-2 text-gray-500 line-clamp-2">{{ result.description }}</p>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span
+              v-for="(result, index) in result.results.slice(0, 2)"
+              :key="index"
+              class="text-sm text-gray-600"
+            >
+              {{ result }}
+              <span v-if="index < 1" class="mx-1">•</span>
+            </span>
+            <span v-if="result.results.length > 2" class="text-sm text-gray-400">
+              +{{ result.results.length - 2 }} more
+            </span>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="mt-12 flex justify-center">
-      <nav class="flex items-center space-x-2">
-        <button class="px-3 py-1 rounded-md bg-white text-gray-700 hover:bg-gray-50">
-          Previous
-        </button>
-        <button class="px-3 py-1 rounded-md bg-primary text-white">1</button>
-        <button class="px-3 py-1 rounded-md bg-white text-gray-700 hover:bg-gray-50">2</button>
-        <button class="px-3 py-1 rounded-md bg-white text-gray-700 hover:bg-gray-50">3</button>
-        <button class="px-3 py-1 rounded-md bg-white text-gray-700 hover:bg-gray-50">Next</button>
-      </nav>
+      </router-link>
     </div>
   </div>
 </template>
-
-<script setup>
-// Component logic will be added later
-</script>

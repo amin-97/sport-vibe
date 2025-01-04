@@ -2,10 +2,11 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const jwt = require("jsonwebtoken"); // Add this
 
 router.post("/google", async (req, res) => {
   try {
-    console.log("Received auth request:", req.body); // Debug log
+    console.log("Received auth request:", req.body);
 
     const { googleId, email, displayName, photoURL } = req.body;
 
@@ -17,7 +18,6 @@ router.post("/google", async (req, res) => {
     let user = await User.findOne({ googleId });
 
     if (!user) {
-      // Create new user
       user = new User({
         googleId,
         email,
@@ -25,15 +25,21 @@ router.post("/google", async (req, res) => {
         photoURL,
       });
       await user.save();
-      console.log("New user created:", user); // Debug log
+      console.log("New user created:", user);
     } else {
-      // Update last login
       user.lastLogin = new Date();
       await user.save();
-      console.log("Existing user updated:", user); // Debug log
+      console.log("Existing user updated:", user);
     }
 
-    res.json({ user });
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.json({ user, token }); // Return both user and token
   } catch (error) {
     console.error("Auth error:", error);
     res

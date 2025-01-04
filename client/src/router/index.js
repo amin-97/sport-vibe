@@ -11,6 +11,10 @@ import WrestlingResults from '@/views/wrestling/WrestlingResults.vue'
 import WrestlingEditorials from '@/views/wrestling/WrestlingEditorials.vue'
 import NotFound from '@/views/NotFound.vue'
 import { useAuthStore } from '@/stores/auth'
+import CreateEditorial from '@/views/admin/CreateEditorial.vue'
+import CreateWrestlingResults from '@/views/admin/CreateWrestlingResults.vue'
+import CreateNews from '@/views/admin/CreateNews.vue'
+import WrestlingResultDetail from '@/views/wrestling/WrestlingResultDetail.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,27 +62,33 @@ const router = createRouter({
       component: WrestlingResults,
     },
     {
+      path: '/wrestling/results/:id',
+      name: 'wrestlingResultDetail',
+      component: WrestlingResultDetail,
+    },
+    {
       path: '/wrestling/editorials',
       name: 'wrestlingEditorials',
       component: WrestlingEditorials,
     },
     // Admin Routes
+    // In your router configuration
     {
       path: '/admin/write/results',
-      name: 'writeResults',
-      component: () => import('../views/admin/WriteResultsView.vue'),
+      name: 'createWrestlingResult',
+      component: CreateWrestlingResults,
       meta: { requiresAdmin: true },
     },
     {
-      path: '/admin/write/article',
-      name: 'writeArticle',
-      component: () => import('../views/admin/WriteArticleView.vue'),
+      path: '/admin/write/news',
+      name: 'writeNews',
+      component: CreateNews,
       meta: { requiresAdmin: true },
     },
     {
       path: '/admin/write/editorial',
       name: 'writeEditorial',
-      component: () => import('../views/admin/WriteEditorialView.vue'),
+      component: CreateEditorial,
       meta: { requiresAdmin: true },
     },
     // 404 Route
