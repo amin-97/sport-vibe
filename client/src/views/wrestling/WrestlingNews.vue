@@ -20,7 +20,7 @@ const formatDate = (date) => {
 const fetchNews = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('/api/news')
+    const { data } = await axios.get('/api/wrestling-news')
     // Filter for only wrestling news (wwe and aew categories)
     news.value = data.filter((item) => ['wwe', 'aew'].includes(item.category))
   } catch (err) {

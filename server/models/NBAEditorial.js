@@ -1,15 +1,9 @@
-// server/models/Editorial.js
 const mongoose = require("mongoose");
 
-const editorialSchema = new mongoose.Schema(
+const nbaEditorialSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      enum: ["nba", "wrestling"],
       required: true,
     },
     summary: {
@@ -58,16 +52,14 @@ const editorialSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    relatedContent: [
+    teams: [
       {
-        type: {
-          type: String,
-          enum: ["news", "editorial", "result"],
-        },
-        item: {
-          type: mongoose.Schema.Types.ObjectId,
-          refPath: "relatedContent.type",
-        },
+        type: String, // NBA team names
+      },
+    ],
+    players: [
+      {
+        type: String, // Player names
       },
     ],
     readingTime: {
@@ -81,7 +73,7 @@ const editorialSchema = new mongoose.Schema(
 );
 
 // Create slug before saving
-editorialSchema.pre("save", function (next) {
+nbaEditorialSchema.pre("save", function (next) {
   if (this.isModified("title")) {
     this.slug = this.title
       .toLowerCase()
@@ -100,10 +92,4 @@ editorialSchema.pre("save", function (next) {
   next();
 });
 
-// Add indexes
-editorialSchema.index({ category: 1, createdAt: -1 });
-editorialSchema.index({ topics: 1 });
-editorialSchema.index({ featured: 1 });
-editorialSchema.index({ "relatedContent.item": 1 });
-
-module.exports = mongoose.model("Editorial", editorialSchema);
+module.exports = mongoose.model("NBAEditorial", nbaEditorialSchema);

@@ -1,10 +1,14 @@
-<!-- src/views/admin/CreateNews.vue -->
+<!-- src/views/edits/EditWrestlingNews.vue -->
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="bg-white rounded-lg shadow p-6">
-      <h1 class="text-2xl font-bold text-gray-900 mb-6">Create News Article</h1>
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Wrestling News</h1>
 
-      <form @submit.prevent="handleSubmit" class="space-y-6">
+      <div v-if="loading" class="text-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+      </div>
+
+      <form v-else @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Basic Details -->
         <div class="space-y-4">
           <div>
@@ -18,21 +22,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select
-              v-model="newsData.category"
-              class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
-              required
-            >
-              <option value="">Select Category</option>
-              <option value="nba">NBA</option>
-              <option value="wwe">WWE</option>
-              <option value="aew">AEW</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea
               v-model="newsData.description"
               rows="2"
@@ -42,26 +32,36 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
-            <input
-              type="file"
-              @change="handleImageUpload"
-              accept="image/*"
-              class="w-full"
+            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select
+              v-model="newsData.category"
+              class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
               required
-            />
+            >
+              <option value="wwe">WWE</option>
+              <option value="aew">AEW</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+            <input type="file" @change="handleImageUpload" accept="image/*" class="w-full" />
             <img
-              v-if="imagePreview"
-              :src="imagePreview"
+              :src="imagePreview || newsData.image?.url"
               class="mt-2 h-32 w-auto object-cover rounded"
             />
           </div>
         </div>
 
-        <!-- Editor -->
+        <!-- Content -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
-          <EditorForm v-model="newsData.content" placeholder="Write your news article..." />
+          <textarea
+            v-model="newsData.content"
+            rows="6"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+            required
+          ></textarea>
         </div>
 
         <!-- Tags -->
@@ -92,14 +92,22 @@
           </div>
         </div>
 
-        <!-- Submit Button -->
+        <!-- Submit Buttons -->
         <div class="flex justify-end gap-4">
+          <button
+            type="button"
+            @click="saveAsDraft"
+            :disabled="isSubmitting"
+            class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
+          >
+            Save as Draft
+          </button>
           <button
             type="submit"
             :disabled="isSubmitting"
             class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
           >
-            {{ isSubmitting ? 'Publishing...' : 'Publish News' }}
+            {{ isSubmitting ? 'Updating...' : 'Update News' }}
           </button>
         </div>
       </form>
@@ -108,25 +116,48 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import EditorForm from '@/components/EditorForm.vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { useToast } from 'vue-toast-notification'
 
+const route = useRoute()
 const router = useRouter()
+const toast = useToast()
+
 const isSubmitting = ref(false)
+const loading = ref(true)
 const imagePreview = ref(null)
+const tagInput = ref('')
 
 const newsData = ref({
   title: '',
-  category: '',
   description: '',
   content: '',
+  category: '',
   image: null,
   tags: [],
+  status: 'published',
 })
 
-const tagInput = ref('')
+const fetchNews = async () => {
+  try {
+    const { data } = await axios.get(`/api/wrestling-news/slug/${route.params.slug}`)
+    newsData.value = {
+      ...data,
+      image: data.image || null,
+      tags: data.tags || [],
+    }
+    loading.value = false
+  } catch (err) {
+    console.error('Error fetching news:', err)
+    toast.error('Failed to load news', {
+      position: 'top-right',
+      duration: 3000,
+    })
+    loading.value = false
+  }
+}
 
 const addTag = () => {
   if (tagInput.value.trim()) {
@@ -142,9 +173,14 @@ const removeTag = (index) => {
 const handleImageUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
-    newsData.value.image = file
+    newsData.value.newImage = file
     imagePreview.value = URL.createObjectURL(file)
   }
+}
+
+const saveAsDraft = async () => {
+  newsData.value.status = 'draft'
+  await handleSubmit()
 }
 
 const handleSubmit = async () => {
@@ -152,51 +188,46 @@ const handleSubmit = async () => {
     isSubmitting.value = true
     const formData = new FormData()
 
-    // Log data being sent for debugging
-    console.log('Submitting news data:', {
-      title: newsData.value.title,
-      category: newsData.value.category,
-      description: newsData.value.description,
-      content: newsData.value.content,
-      tags: newsData.value.tags,
-    })
-
     // Append basic fields
     formData.append('title', newsData.value.title)
-    formData.append('category', newsData.value.category)
     formData.append('description', newsData.value.description)
     formData.append('content', newsData.value.content)
+    formData.append('category', newsData.value.category)
     formData.append('tags', JSON.stringify(newsData.value.tags))
+    formData.append('status', newsData.value.status)
 
-    // Append image if it exists
-    if (newsData.value.image) {
-      formData.append('image', newsData.value.image)
+    // Append new image if uploaded
+    if (newsData.value.newImage) {
+      formData.append('image', newsData.value.newImage)
     }
 
-    // Get token from localStorage or your auth store
-    const token = localStorage.getItem('token') // or however you store your token
-
-    const response = await axios.post('/api/news', formData, {
+    const token = localStorage.getItem('token')
+    const response = await axios.put(`/api/wrestling-news/slug/${route.params.slug}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`, // Add auth token
+        Authorization: `Bearer ${token}`,
       },
-      baseURL: 'http://localhost:5000', // Add your backend URL
     })
 
-    console.log('News created:', response.data)
+    toast.success('News updated successfully', {
+      position: 'top-right',
+      duration: 3000,
+    })
 
-    if (response.data._id) {
-      router.push(`/wrestling/news/`)
-    }
+    // Navigate to the news detail page
+    router.push(`/wrestling/news/${response.data.slug}`)
   } catch (error) {
-    console.error('Error creating news:', error.response?.data || error)
-    // Add error feedback to user
-    alert(error.response?.data?.message || 'Error creating news article')
+    console.error('Error updating news:', error)
+    toast.error(error.response?.data?.message || 'Error updating news', {
+      position: 'top-right',
+      duration: 3000,
+    })
   } finally {
     isSubmitting.value = false
   }
 }
+
+onMounted(fetchNews)
 
 // Cleanup
 onBeforeUnmount(() => {
@@ -205,10 +236,3 @@ onBeforeUnmount(() => {
   }
 })
 </script>
-
-<style scoped>
-.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-</style>

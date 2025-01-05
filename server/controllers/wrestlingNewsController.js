@@ -1,11 +1,11 @@
 // server/controllers/newsController.js
-const News = require("../models/News");
+const WrestlingNews = require("../models/WrestlingNews");
 const { uploadToS3, deleteFromS3 } = require("../utils/s3");
 
 // Get all news
-exports.getAllNews = async (req, res) => {
+exports.getAllWrestlingNews = async (req, res) => {
   try {
-    const news = await News.find()
+    const news = await WrestlingNews.find()
       .populate("author", "displayName")
       .sort({ createdAt: -1 });
     res.json(news);
@@ -15,9 +15,9 @@ exports.getAllNews = async (req, res) => {
 };
 
 // Get news by ID
-exports.getNewsById = async (req, res) => {
+exports.getWrestlingNewsById = async (req, res) => {
   try {
-    const news = await News.findById(req.params.id).populate(
+    const news = await WrestlingNews.findById(req.params.id).populate(
       "author",
       "displayName"
     );
@@ -30,10 +30,26 @@ exports.getNewsById = async (req, res) => {
   }
 };
 
-// Get news by category
-exports.getNewsByCategory = async (req, res) => {
+// In newsController.js, add a new method:
+exports.getWrestlingNewsBySlug = async (req, res) => {
   try {
-    const news = await News.find({ category: req.params.category })
+    const news = await WrestlingNews.findOne({
+      slug: req.params.slug,
+    }).populate("author", "displayName");
+    if (!news) {
+      return res.status(404).json({ message: "News not found" });
+    }
+    res.json(news);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// In news routes file, add a new route:
+
+// Get news by category
+exports.getWrestlingNewsByCategory = async (req, res) => {
+  try {
+    const news = await WrestlingNews.find({ category: req.params.category })
       .populate("author", "displayName")
       .sort({ createdAt: -1 });
     res.json(news);
@@ -43,11 +59,11 @@ exports.getNewsByCategory = async (req, res) => {
 };
 
 // Create news
-exports.createNews = async (req, res) => {
+exports.createWrestlingNews = async (req, res) => {
   try {
     const { title, category, description, content, tags } = req.body;
 
-    const newsData = {
+    const wrestlingNewsData = {
       title,
       category,
       description,
@@ -58,13 +74,13 @@ exports.createNews = async (req, res) => {
 
     if (req.file) {
       const uploadResult = await uploadToS3(req.file, "news-images");
-      newsData.image = {
+      wrestlingNewsData.image = {
         url: uploadResult.url,
         key: uploadResult.key,
       };
     }
 
-    const news = await News.create(newsData);
+    const news = await WrestlingNews.create(wrestlingNewsData);
     res.status(201).json(news);
   } catch (error) {
     console.error("Error creating news:", error);
@@ -73,9 +89,9 @@ exports.createNews = async (req, res) => {
 };
 
 // Update news
-exports.updateNews = async (req, res) => {
+exports.updateWrestlingNews = async (req, res) => {
   try {
-    const news = await News.findById(req.params.id);
+    const news = await WrestlingNews.findById(req.params.id);
     if (!news) {
       return res.status(404).json({ message: "News not found" });
     }
@@ -104,20 +120,70 @@ exports.updateNews = async (req, res) => {
       };
     }
 
-    const updatedNews = await News.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-    });
+    const updatedWrestlingNews = await WrestlingNews.findByIdAndUpdate(
+      req.params.id,
+      updates,
+      {
+        new: true,
+      }
+    );
 
-    res.json(updatedNews);
+    res.json(updatedWrestlingNews);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Delete news
-exports.deleteNews = async (req, res) => {
+exports.updateWrestlingNewsBySlug = async (req, res) => {
   try {
-    const news = await News.findById(req.params.id);
+    // Find the news by slug
+    const news = await WrestlingNews.findOne({ slug: req.params.slug });
+
+    if (!news) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    // Check if user is the author
+    if (news.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    const updates = {
+      ...req.body,
+      tags: req.body.tags ? JSON.parse(req.body.tags) : news.tags,
+    };
+
+    // Handle image update
+    if (req.file) {
+      // Delete old image if it exists
+      if (news.image?.key) {
+        await deleteFromS3(news.image.key);
+      }
+
+      const uploadResult = await uploadToS3(req.file, "news-images");
+      updates.image = {
+        url: uploadResult.url,
+        key: uploadResult.key,
+      };
+    }
+
+    const updatedWrestlingNews = await WrestlingNews.findOneAndUpdate(
+      { slug: req.params.slug },
+      updates,
+      { new: true }
+    );
+
+    res.json(updatedWrestlingNews);
+  } catch (error) {
+    console.error("Error updating news by slug:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete news
+exports.deleteWrestlingNews = async (req, res) => {
+  try {
+    const news = await WrestlingNews.findById(req.params.id);
     if (!news) {
       return res.status(404).json({ message: "News not found" });
     }

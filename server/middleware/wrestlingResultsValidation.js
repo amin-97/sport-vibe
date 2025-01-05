@@ -1,4 +1,3 @@
-// server/middleware/wrestlingResultsValidation.js
 const { body, validationResult } = require("express-validator");
 
 const validateWrestlingResult = [
@@ -12,21 +11,35 @@ const validateWrestlingResult = [
 
   body("venue").trim().notEmpty().withMessage("Venue is required"),
 
-  body("promotion").isIn(["WWE", "AEW"]).withMessage("Invalid promotion"),
+  body("promotion")
+    .isIn(["WWE", "AEW"])
+    .withMessage("Promotion must be either WWE or AEW"),
 
-  // server/middleware/wrestlingResultsValidation.js
+  body("status")
+    .optional()
+    .isIn(["draft", "published"])
+    .withMessage("Status must be either draft or published"),
+
   body("matches")
     .custom((value) => {
       try {
-        const parsed = JSON.parse(value);
-        return Array.isArray(parsed);
+        const matches = JSON.parse(value);
+        if (!Array.isArray(matches)) return false;
+
+        return matches.every(
+          (match) =>
+            match.type &&
+            Array.isArray(match.wrestlers) &&
+            match.wrestlers.length > 0 &&
+            match.winner &&
+            match.highlights &&
+            match.thoughts
+        );
       } catch {
         return false;
       }
     })
-    .withMessage("Matches must be an array"),
-
-  // Add validation for nested match data here if needed
+    .withMessage("Invalid matches format or missing required match fields"),
 
   (req, res, next) => {
     const errors = validationResult(req);

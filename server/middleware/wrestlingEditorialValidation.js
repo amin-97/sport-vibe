@@ -1,5 +1,7 @@
-// server/middleware/editorialValidation.js
-const validateEditorial = (req, res, next) => {
+const validateWrestlingEditorial = (req, res, next) => {
+  console.log("Request Body:", JSON.stringify(req.body, null, 2));
+  console.log("Request File:", req.file);
+
   const { title, category, summary, content, status, featured } = req.body;
   const errors = [];
 
@@ -38,7 +40,12 @@ const validateEditorial = (req, res, next) => {
   }
 
   // Featured validation (optional)
-  if (featured !== undefined && typeof featured !== "boolean") {
+  if (
+    featured !== undefined &&
+    typeof featured !== "boolean" &&
+    featured !== "true" &&
+    featured !== "false"
+  ) {
     errors.push("Featured must be a boolean value");
   }
 
@@ -114,6 +121,7 @@ const validateEditorial = (req, res, next) => {
   }
 
   if (errors.length > 0) {
+    console.log("Validation Errors:", errors);
     return res.status(400).json({
       success: false,
       errors,
@@ -123,4 +131,4 @@ const validateEditorial = (req, res, next) => {
   next();
 };
 
-module.exports = validateEditorial;
+module.exports = validateWrestlingEditorial;

@@ -35,7 +35,7 @@ const filteredEditorials = computed(() => {
 const fetchEditorials = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('/api/editorials')
+    const { data } = await axios.get('/api/wrestling-editorials')
     editorials.value = data
   } catch (err) {
     error.value = 'Failed to fetch editorials'

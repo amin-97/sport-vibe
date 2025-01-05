@@ -39,11 +39,22 @@ app.use("/api/test", testRoutes);
 const wrestlingResultsRoutes = require("./routes/api/wrestlingResults");
 app.use("/api/wrestling-results", wrestlingResultsRoutes);
 
-const newsRoutes = require("./routes/api/news");
-app.use("/api/news", newsRoutes);
+const wrestlingNewsRoutes = require("./routes/api/wrestingNews");
+app.use("/api/wrestling-news", wrestlingNewsRoutes);
 
-const editorialRoutes = require("./routes/api/editorials");
-app.use("/api/editorials", editorialRoutes);
+const wrestlingEditorialRoutes = require("./routes/api/wrestlingEditorials");
+app.use("/api/wrestling-editorials", wrestlingEditorialRoutes);
+
+// server/server.js
+const nbaNewsRoutes = require("./routes/api/nbaNews");
+const nbaEditorialRoutes = require("./routes/api/nbaEditorials");
+
+app.use("/api/nba-news", nbaNewsRoutes);
+app.use("/api/nba-editorials", nbaEditorialRoutes);
+
+// server/app.js
+const activePlayerStatsRoutes = require("./routes/api/activePlayerCareerStats");
+app.use("/api/stats", activePlayerStatsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

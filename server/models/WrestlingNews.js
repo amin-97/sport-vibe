@@ -1,7 +1,7 @@
 // server/models/News.js
 const mongoose = require("mongoose");
 
-const newsSchema = new mongoose.Schema(
+const wrestlingNewsSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -45,7 +45,7 @@ const newsSchema = new mongoose.Schema(
 );
 
 // Generate slug before saving
-newsSchema.pre("save", function (next) {
+wrestlingNewsSchema.pre("save", function (next) {
   if (this.isModified("title")) {
     this.slug =
       this.title
@@ -58,4 +58,4 @@ newsSchema.pre("save", function (next) {
   next();
 });
 
-module.exports = mongoose.model("News", newsSchema);
+module.exports = mongoose.model("WrestlingNews", wrestlingNewsSchema);

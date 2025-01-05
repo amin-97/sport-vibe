@@ -1,5 +1,5 @@
 // server/middleware/newsValidation.js
-const validateNews = (req, res, next) => {
+const validateWrestlingNews = (req, res, next) => {
   const { title, category, description, content } = req.body;
   const errors = [];
 
@@ -11,10 +11,10 @@ const validateNews = (req, res, next) => {
   }
 
   // Category validation
-  const validCategories = ["nba", "wwe", "aew"];
+  const validWrestlingCategories = ["wwe", "aew"];
   if (!category) {
     errors.push("Category is required");
-  } else if (!validCategories.includes(category)) {
+  } else if (!validWrestlingCategories.includes(category)) {
     errors.push("Invalid category. Must be one of: nba, wwe, aew");
   }
 
@@ -70,4 +70,4 @@ const validateNews = (req, res, next) => {
   next();
 };
 
-module.exports = validateNews;
+module.exports = validateWrestlingNews;

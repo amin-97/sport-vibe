@@ -11,10 +11,22 @@ import WrestlingResults from '@/views/wrestling/WrestlingResults.vue'
 import WrestlingEditorials from '@/views/wrestling/WrestlingEditorials.vue'
 import NotFound from '@/views/NotFound.vue'
 import { useAuthStore } from '@/stores/auth'
-import CreateEditorial from '@/views/admin/CreateEditorial.vue'
+import CreateEditorial from '@/views/admin/CreateWrestlingEditorial.vue'
 import CreateWrestlingResults from '@/views/admin/CreateWrestlingResults.vue'
-import CreateNews from '@/views/admin/CreateNews.vue'
+import CreateNews from '@/views/admin/CreateWrestlingNews.vue'
 import WrestlingResultDetail from '@/views/wrestling/WrestlingResultDetail.vue'
+import CreateNBAEditorial from '@/views/nba/CreateNBAEditorial.vue'
+import CreateNBANews from '@/views/nba/CreateNBANews.vue'
+import AdminDashboard from '@/views/admin/AdminDashboard.vue'
+import NBANewsDetail from '@/views/nba/NBANewsDetail.vue'
+import NBAEditorialDetail from '@/views/nba/NBAEditorialDetail.vue'
+import WrestlingNewsDetail from '@/views/wrestling/WrestlingNewsDetail.vue'
+import WrestlingEditorialDetail from '@/views/wrestling/WrestlingEditorialDetail.vue'
+import EditWrestlingResult from '@/views/edits/EditWrestlingResult.vue'
+import EditNBANews from '@/views/edits/EditNBANews.vue'
+import EditNBAEditorial from '@/views/edits/EditNBAEditorial.vue'
+import EditWrestlingNews from '@/views/edits/EditWrestlingNews.vue'
+import EditWrestlingEditorial from '@/views/edits/EditWrestlingEditorial.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +62,17 @@ const router = createRouter({
       name: 'nbaEditorials',
       component: NBAEditorials,
     },
+    // src/router/index.js
+    {
+      path: '/nba/news/:slug',
+      name: 'nbaNewsDetail',
+      component: NBANewsDetail,
+    },
+    {
+      path: '/nba/editorials/:slug',
+      name: 'nbaEditorialDetail',
+      component: NBAEditorialDetail,
+    },
     // Wrestling Routes
     {
       path: '/wrestling/news',
@@ -57,12 +80,17 @@ const router = createRouter({
       component: WrestlingNews,
     },
     {
+      path: '/wrestling/news/:slug',
+      name: 'wrestlingNewsDetail',
+      component: WrestlingNewsDetail,
+    },
+    {
       path: '/wrestling/results',
       name: 'wrestlingResults',
       component: WrestlingResults,
     },
     {
-      path: '/wrestling/results/:id',
+      path: '/wrestling/results/:slug',
       name: 'wrestlingResultDetail',
       component: WrestlingResultDetail,
     },
@@ -71,12 +99,28 @@ const router = createRouter({
       name: 'wrestlingEditorials',
       component: WrestlingEditorials,
     },
+    {
+      path: '/wrestling/editorials/:slug',
+      name: 'wrestlingEditorialDetail',
+      component: WrestlingEditorialDetail,
+    },
     // Admin Routes
-    // In your router configuration
+    {
+      path: '/admin/dashboard',
+      name: 'adminDashboard',
+      component: AdminDashboard,
+      meta: { requiresAdmin: true },
+    },
     {
       path: '/admin/write/results',
       name: 'createWrestlingResult',
       component: CreateWrestlingResults,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/edit/wrestling/results/:slug',
+      name: 'editWrestlingResult',
+      component: EditWrestlingResult,
       meta: { requiresAdmin: true },
     },
     {
@@ -89,6 +133,43 @@ const router = createRouter({
       path: '/admin/write/editorial',
       name: 'writeEditorial',
       component: CreateEditorial,
+      meta: { requiresAdmin: true },
+    },
+    // src/router/index.js
+    {
+      path: '/admin/write/nba/editorial',
+      name: 'createNBAEditorial',
+      component: CreateNBAEditorial,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/edit/nba/editorial/:slug',
+      name: 'editNBAEditorial',
+      component: EditNBAEditorial,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/write/nba/news',
+      name: 'createNBANews',
+      component: CreateNBANews,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/edit/nba/news/:slug',
+      name: 'editNBANews',
+      component: EditNBANews,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/edit/wrestling/news/:slug',
+      name: 'editWrestlingNews',
+      component: EditWrestlingNews,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin/edit/wrestling/editorial/:slug',
+      name: 'editWrestlingEditorial',
+      component: EditWrestlingEditorial,
       meta: { requiresAdmin: true },
     },
     // 404 Route

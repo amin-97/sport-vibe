@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "import-stats": "node scripts/importPlayerStats.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.721.0",
@@ -17,7 +18,8 @@
     "firebase-admin": "^11.11.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.2.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

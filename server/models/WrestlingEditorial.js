@@ -1,7 +1,7 @@
 // server/models/Editorial.js
 const mongoose = require("mongoose");
 
-const editorialSchema = new mongoose.Schema(
+const wrestlingEditorialSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -81,7 +81,7 @@ const editorialSchema = new mongoose.Schema(
 );
 
 // Create slug before saving
-editorialSchema.pre("save", function (next) {
+wrestlingEditorialSchema.pre("save", function (next) {
   if (this.isModified("title")) {
     this.slug = this.title
       .toLowerCase()
@@ -101,9 +101,9 @@ editorialSchema.pre("save", function (next) {
 });
 
 // Add indexes
-editorialSchema.index({ category: 1, createdAt: -1 });
-editorialSchema.index({ topics: 1 });
-editorialSchema.index({ featured: 1 });
-editorialSchema.index({ "relatedContent.item": 1 });
+wrestlingEditorialSchema.index({ category: 1, createdAt: -1 });
+wrestlingEditorialSchema.index({ topics: 1 });
+wrestlingEditorialSchema.index({ featured: 1 });
+wrestlingEditorialSchema.index({ "relatedContent.item": 1 });
 
-module.exports = mongoose.model("Editorial", editorialSchema);
+module.exports = mongoose.model("WrestlingEditorial", wrestlingEditorialSchema);

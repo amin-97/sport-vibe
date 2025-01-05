@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 router.use("/wrestling-results", require("./wrestlingResults"));
-router.use("/news", require("./news"));
-router.use("/editorials", require("./editorials"));
+router.use("/wrestling-news", require("./wrestlingNews"));
+router.use("/wrestling-editorials", require("./wrestlingEditorials"));
 
 module.exports = router;
