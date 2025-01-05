@@ -8,14 +8,28 @@ const {
 const wrestlingResultsController = require("../../controllers/wrestlingResultsController");
 const upload = require("../../middleware/multer");
 
-// Public routes
-router.get("/", wrestlingResultsController.getAllWrestlingResults);
-router.get("/slug/:slug", wrestlingResultsController.getWrestlingResultBySlug);
+// Public routes - these will automatically filter out drafts for non-admin users
+router.get("/", verifyToken, wrestlingResultsController.getAllWrestlingResults);
+router.get(
+  "/slug/:slug",
+  verifyToken,
+  wrestlingResultsController.getWrestlingResultBySlug
+);
 router.get(
   "/promotion/:promotion",
+  verifyToken,
   wrestlingResultsController.getWrestlingResultsByPromotion
 );
-// Protected routes
+
+// Admin-only routes
+router.get(
+  "/drafts",
+  verifyToken,
+  isAdmin,
+  wrestlingResultsController.getDrafts
+);
+
+// Protected routes for creating/updating content
 router.post(
   "/",
   verifyToken,

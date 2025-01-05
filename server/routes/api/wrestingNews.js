@@ -47,4 +47,12 @@ router.delete(
   wrestlingNewsController.deleteWrestlingNews
 );
 
+// server/routes/api/wrestlingNews.js
+router.get(
+  "/drafts",
+  verifyToken,
+  isAdmin,
+  wrestlingNewsController.getWrestlingNewsDrafts
+);
+
 module.exports = router;

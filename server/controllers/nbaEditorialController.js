@@ -236,4 +236,18 @@ exports.deleteEditorial = async (req, res) => {
   }
 };
 
+exports.getAllDrafts = async (req, res) => {
+  try {
+    const drafts = await NBAEditorial.find({
+      status: "draft",
+      author: req.user._id, // Ensure users can only see their own drafts
+    })
+      .populate("author", "displayName")
+      .sort({ createdAt: -1 });
+    res.json(drafts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = exports;

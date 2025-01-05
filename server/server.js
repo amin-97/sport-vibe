@@ -56,6 +56,12 @@ app.use("/api/nba-editorials", nbaEditorialRoutes);
 const activePlayerStatsRoutes = require("./routes/api/activePlayerCareerStats");
 app.use("/api/stats", activePlayerStatsRoutes);
 
+const teams = require("./routes/api/teams");
+app.use("/api/teams", teams);
+const teamDetails = require("./routes/api/teamDetails");
+app.use("/api/team-details", teamDetails);
+const commonTeamRoster = require("./routes/api/commonTeamRoster");
+app.use("/api/common-team-roster", commonTeamRoster);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

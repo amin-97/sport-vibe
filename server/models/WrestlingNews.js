@@ -38,6 +38,11 @@ const wrestlingNewsSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    status: {
+      type: String,
+      enum: ["draft", "published"],
+      default: "published",
+    },
   },
   {
     timestamps: true,

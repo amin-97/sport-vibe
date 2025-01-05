@@ -5,7 +5,7 @@ const { uploadToS3, deleteFromS3 } = require("../utils/s3");
 // Get all editorials
 exports.getAllWrestlingEditorials = async (req, res) => {
   try {
-    const editorials = await WrestlingEditorial.find()
+    const editorials = await WrestlingEditorial.find({ status: "published" })
       .populate("author", "displayName")
       .sort({ createdAt: -1 });
     res.json(editorials);
@@ -259,6 +259,21 @@ exports.deleteWrestlingEditorial = async (req, res) => {
 
     await editorial.remove();
     res.json({ message: "Editorial deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Add this to wrestlingEditorialController.js
+exports.getWrestlingEditorialDrafts = async (req, res) => {
+  try {
+    const drafts = await WrestlingEditorial.find({
+      status: "draft",
+      author: req.user._id,
+    })
+      .populate("author", "displayName")
+      .sort({ updatedAt: -1 });
+    res.json(drafts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

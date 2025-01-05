@@ -193,3 +193,17 @@ exports.updateNewsBySlug = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getAllDrafts = async (req, res) => {
+  try {
+    const drafts = await NBANews.find({
+      status: "draft",
+      author: req.user._id, // Ensure users can only see their own drafts
+    })
+      .populate("author", "displayName")
+      .sort({ createdAt: -1 });
+    res.json(drafts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

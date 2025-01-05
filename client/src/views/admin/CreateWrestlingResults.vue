@@ -194,8 +194,16 @@
         </div>
       </div>
 
-      <!-- Submit Button -->
-      <div class="mt-8 flex justify-end">
+      <!-- Submit and Save to Drafts Buttons -->
+      <div class="mt-8 flex justify-end space-x-4">
+        <button
+          type="button"
+          @click="handleSaveToDrafts"
+          :disabled="isSubmitting"
+          class="px-6 py-2 bg-secondary text-gray-800 rounded-md hover:bg-secondary/90 disabled:opacity-50"
+        >
+          {{ isSubmitting ? 'Saving...' : 'Save to Drafts' }}
+        </button>
         <button
           type="submit"
           :disabled="isSubmitting"
@@ -274,26 +282,59 @@ const handleAdditionalImages = (e) => {
   additionalImagePreviews.value = files.map((file) => URL.createObjectURL(file))
 }
 
+const prepareFormData = () => {
+  const formDataToSubmit = new FormData()
+
+  // Append basic fields
+  formDataToSubmit.append('name', formData.value.name)
+  formDataToSubmit.append('date', formData.value.date)
+  formDataToSubmit.append('venue', formData.value.venue)
+  formDataToSubmit.append('promotion', formData.value.promotion)
+  formDataToSubmit.append('matches', JSON.stringify(formData.value.matches))
+
+  // Append files
+  if (coverImage.value) {
+    formDataToSubmit.append('coverImage', coverImage.value)
+  }
+  if (additionalImages.value.length) {
+    additionalImages.value.forEach((image) => {
+      formDataToSubmit.append('additionalImages', image)
+    })
+  }
+
+  return formDataToSubmit
+}
+
+const handleSaveToDrafts = async () => {
+  try {
+    isSubmitting.value = true
+    const formDataToSubmit = prepareFormData()
+
+    // Add a flag to indicate this is a draft
+    formDataToSubmit.append('isDraft', true)
+
+    const response = await axios.post('/api/wrestling-results/create', formDataToSubmit, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    })
+    console.log('Draft Saved:', response.data)
+    router.push('/wrestling/drafts')
+  } catch (error) {
+    console.error('Error saving draft:', error)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
 const handleSubmit = async () => {
   try {
-    const formDataToSubmit = new FormData()
+    isSubmitting.value = true
+    const formDataToSubmit = prepareFormData()
 
-    // Append basic fields
-    formDataToSubmit.append('name', formData.value.name)
-    formDataToSubmit.append('date', formData.value.date)
-    formDataToSubmit.append('venue', formData.value.venue)
-    formDataToSubmit.append('promotion', formData.value.promotion)
-    formDataToSubmit.append('matches', JSON.stringify(formData.value.matches))
-
-    // Append files
-    if (coverImage.value) {
-      formDataToSubmit.append('coverImage', coverImage.value)
-    }
-    if (additionalImages.value.length) {
-      additionalImages.value.forEach((image) => {
-        formDataToSubmit.append('additionalImages', image)
-      })
-    }
+    // Ensure it's not marked as a draft when submitting
+    formDataToSubmit.append('isDraft', false)
 
     const response = await axios.post('/api/wrestling-results/create', formDataToSubmit, {
       headers: {
@@ -306,8 +347,11 @@ const handleSubmit = async () => {
     router.push(`/wrestling/results/`)
   } catch (error) {
     console.error('Error:', error)
+  } finally {
+    isSubmitting.value = false
   }
 }
+
 // Cleanup URLs when component is unmounted
 onBeforeUnmount(() => {
   if (coverImagePreview.value) {

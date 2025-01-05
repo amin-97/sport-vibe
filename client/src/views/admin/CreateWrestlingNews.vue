@@ -4,7 +4,7 @@
     <div class="bg-white rounded-lg shadow p-6">
       <h1 class="text-2xl font-bold text-gray-900 mb-6">Create News Article</h1>
 
-      <form @submit.prevent="handleSubmit" class="space-y-6">
+      <form id="newsForm" class="space-y-6">
         <!-- Basic Details -->
         <div class="space-y-4">
           <div>
@@ -25,7 +25,7 @@
               required
             >
               <option value="">Select Category</option>
-              <option value="nba">NBA</option>
+              <!-- <option value="nba">NBA</option> -->
               <option value="wwe">WWE</option>
               <option value="aew">AEW</option>
             </select>
@@ -91,18 +91,27 @@
             </div>
           </div>
         </div>
-
-        <!-- Submit Button -->
-        <div class="flex justify-end gap-4">
-          <button
-            type="submit"
-            :disabled="isSubmitting"
-            class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
-          >
-            {{ isSubmitting ? 'Publishing...' : 'Publish News' }}
-          </button>
-        </div>
       </form>
+
+      <!-- Submit Buttons -->
+      <div class="flex justify-end gap-4 mt-6">
+        <button
+          type="button"
+          @click="handleSaveAsDraft"
+          :disabled="isSubmitting"
+          class="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50"
+        >
+          {{ isSubmitting ? 'Saving...' : 'Save as Draft' }}
+        </button>
+        <button
+          type="button"
+          @click="handlePublish"
+          :disabled="isSubmitting"
+          class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
+        >
+          {{ isSubmitting ? 'Publishing...' : 'Publish News' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -124,6 +133,7 @@ const newsData = ref({
   content: '',
   image: null,
   tags: [],
+  status: 'published',
 })
 
 const tagInput = ref('')
@@ -147,58 +157,95 @@ const handleImageUpload = (event) => {
   }
 }
 
-const handleSubmit = async () => {
+const handlePublish = async () => {
+  // Validate form
+  const form = document.getElementById('newsForm')
+  if (!form.checkValidity()) {
+    form.reportValidity()
+    return
+  }
+
   try {
     isSubmitting.value = true
     const formData = new FormData()
 
-    // Log data being sent for debugging
-    console.log('Submitting news data:', {
-      title: newsData.value.title,
-      category: newsData.value.category,
-      description: newsData.value.description,
-      content: newsData.value.content,
-      tags: newsData.value.tags,
-    })
-
-    // Append basic fields
     formData.append('title', newsData.value.title)
     formData.append('category', newsData.value.category)
     formData.append('description', newsData.value.description)
     formData.append('content', newsData.value.content)
     formData.append('tags', JSON.stringify(newsData.value.tags))
+    formData.append('status', 'published')
 
-    // Append image if it exists
     if (newsData.value.image) {
       formData.append('image', newsData.value.image)
     }
 
-    // Get token from localStorage or your auth store
-    const token = localStorage.getItem('token') // or however you store your token
+    const token = localStorage.getItem('token')
 
     const response = await axios.post('/api/wrestling-news', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`, // Add auth token
+        Authorization: `Bearer ${token}`,
       },
-      baseURL: 'http://localhost:5000', // Add your backend URL
+      baseURL: 'http://localhost:5000',
     })
 
     console.log('News created:', response.data)
 
     if (response.data._id) {
-      router.push(`/wrestling/news/`)
+      router.push('/wrestling/news/')
     }
   } catch (error) {
     console.error('Error creating news:', error.response?.data || error)
-    // Add error feedback to user
     alert(error.response?.data?.message || 'Error creating news article')
   } finally {
     isSubmitting.value = false
   }
 }
 
-// Cleanup
+const handleSaveAsDraft = async () => {
+  // Validate required fields for draft
+  if (!newsData.value.title || !newsData.value.category) {
+    alert('Title and category are required even for drafts')
+    return
+  }
+
+  try {
+    isSubmitting.value = true
+    const formData = new FormData()
+
+    formData.append('title', newsData.value.title)
+    formData.append('category', newsData.value.category)
+    formData.append('description', newsData.value.description)
+    formData.append('content', newsData.value.content)
+    formData.append('tags', JSON.stringify(newsData.value.tags))
+    formData.append('status', 'draft')
+
+    if (newsData.value.image) {
+      formData.append('image', newsData.value.image)
+    }
+
+    const token = localStorage.getItem('token')
+
+    const response = await axios.post('/api/wrestling-news', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      baseURL: 'http://localhost:5000',
+    })
+
+    console.log('Draft saved:', response.data)
+    alert('Draft saved successfully!')
+    router.push('/admin/drafts')
+  } catch (error) {
+    console.error('Error saving draft:', error.response?.data || error)
+    alert(error.response?.data?.message || 'Error saving draft')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
 onBeforeUnmount(() => {
   if (imagePreview.value) {
     URL.revokeObjectURL(imagePreview.value)

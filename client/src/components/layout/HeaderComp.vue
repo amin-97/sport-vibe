@@ -38,17 +38,17 @@
                 <router-link
                   to="/admin/write/results"
                   class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
-                  >Write Results</router-link
+                  >Write Wrestling Results</router-link
                 >
                 <router-link
                   to="/admin/write/news"
                   class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
-                  >Write News</router-link
+                  >Write Wrestling News</router-link
                 >
                 <router-link
                   to="/admin/write/editorial"
                   class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
-                  >Write Editorial</router-link
+                  >Write Wrestling Editorial</router-link
                 >
                 <router-link
                   to="/admin/write/nba/editorial"
@@ -95,6 +95,16 @@
                 >
               </div>
             </div>
+            <!-- Add this after the Admin Dashboard dropdown in HeaderComp -->
+            <router-link
+              to="/admin/drafts"
+              class="text-gray-300 hover:text-white relative px-3 py-2 rounded-md text-sm font-medium inline-flex items-center"
+            >
+              Saved Drafts
+              <span
+                class="absolute left-0 bottom-0 w-full h-0.5 bg-orange-500 transform scale-x-0 transition-transform duration-300 ease-out origin-left group-hover:scale-x-100 mt-1"
+              ></span>
+            </router-link>
           </template>
 
           <!-- NBA Dropdown -->
@@ -133,7 +143,7 @@
                 >Editorials</router-link
               >
               <router-link
-                to="/nba/stats"
+                to="/nba-stats"
                 class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
                 >Player Stats</router-link
               >

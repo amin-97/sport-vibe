@@ -59,9 +59,10 @@ exports.getWrestlingNewsByCategory = async (req, res) => {
 };
 
 // Create news
+// server/controllers/wrestlingNewsController.js
 exports.createWrestlingNews = async (req, res) => {
   try {
-    const { title, category, description, content, tags } = req.body;
+    const { title, category, description, content, tags, status } = req.body;
 
     const wrestlingNewsData = {
       title,
@@ -69,6 +70,7 @@ exports.createWrestlingNews = async (req, res) => {
       description,
       content,
       tags: tags ? JSON.parse(tags) : [],
+      status: status || "published", // Add this line
       author: req.user._id,
     };
 
@@ -84,6 +86,21 @@ exports.createWrestlingNews = async (req, res) => {
     res.status(201).json(news);
   } catch (error) {
     console.error("Error creating news:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Add this to wrestlingNewsController.js
+exports.getWrestlingNewsDrafts = async (req, res) => {
+  try {
+    const drafts = await WrestlingNews.find({
+      status: "draft",
+      author: req.user._id,
+    })
+      .populate("author", "displayName")
+      .sort({ updatedAt: -1 });
+    res.json(drafts);
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

@@ -3,9 +3,13 @@ const WrestlingResult = require("../models/WrestlingResult");
 const { uploadToS3, deleteFromS3 } = require("../utils/s3");
 
 // Get all wrestling results
+// Get all wrestling results
 exports.getAllWrestlingResults = async (req, res) => {
   try {
-    const results = await WrestlingResult.find({ status: "published" })
+    // Check if user is admin to include drafts
+    const statusQuery = req.user?.isAdmin ? {} : { status: "published" };
+
+    const results = await WrestlingResult.find(statusQuery)
       .populate("author", "displayName")
       .sort({ date: -1 });
     res.json(results);
@@ -18,9 +22,12 @@ exports.getAllWrestlingResults = async (req, res) => {
 // Get wrestling result by slug
 exports.getWrestlingResultBySlug = async (req, res) => {
   try {
+    // Allow admins to view drafts
+    const statusQuery = req.user?.isAdmin ? {} : { status: "published" };
+
     const result = await WrestlingResult.findOne({
       slug: req.params.slug,
-      status: "published",
+      ...statusQuery,
     }).populate("author", "displayName");
 
     if (!result) {
@@ -33,13 +40,15 @@ exports.getWrestlingResultBySlug = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 // Get wrestling results by promotion
 exports.getWrestlingResultsByPromotion = async (req, res) => {
   try {
+    // Include drafts for admin users
+    const statusQuery = req.user?.isAdmin ? {} : { status: "published" };
+
     const results = await WrestlingResult.find({
       promotion: req.params.promotion.toUpperCase(),
-      status: "published",
+      ...statusQuery,
     })
       .populate("author", "displayName")
       .sort({ date: -1 });
@@ -91,6 +100,18 @@ exports.createWrestlingResult = async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     console.error("Error creating result:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getDrafts = async (req, res) => {
+  try {
+    const drafts = await WrestlingResult.find({ status: "draft" })
+      .populate("author", "displayName")
+      .sort({ updatedAt: -1 });
+    res.json(drafts);
+  } catch (error) {
+    console.error("Error fetching drafts:", error);
     res.status(500).json({ message: error.message });
   }
 };

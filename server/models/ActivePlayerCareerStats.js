@@ -231,4 +231,7 @@ playerCareerStatsSchema.statics.getSeasonLeaders = async function (
     .select(`PLAYER_FIRST_NAME PLAYER_LAST_NAME TEAM_ABBREVIATION ${category}`);
 };
 
-module.exports = mongoose.model("PlayerCareerStats", playerCareerStatsSchema);
+module.exports = mongoose.model(
+  "ActivePlayerCareerStats",
+  playerCareerStatsSchema
+);

@@ -52,4 +52,12 @@ router.delete(
   wrestlingEditorialController.deleteWrestlingEditorial
 );
 
+// Add to wrestlingEditorials.js routes
+router.get(
+  "/drafts",
+  verifyToken,
+  isAdmin,
+  wrestlingEditorialController.getWrestlingEditorialDrafts
+);
+
 module.exports = router;

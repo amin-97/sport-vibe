@@ -27,6 +27,7 @@ import EditNBANews from '@/views/edits/EditNBANews.vue'
 import EditNBAEditorial from '@/views/edits/EditNBAEditorial.vue'
 import EditWrestlingNews from '@/views/edits/EditWrestlingNews.vue'
 import EditWrestlingEditorial from '@/views/edits/EditWrestlingEditorial.vue'
+import PlayerStats from '@/views/nba/PlayerStats.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,9 +39,14 @@ const router = createRouter({
     },
     // NBA Routes
     {
-      path: '/nba/stats',
+      path: '/nba-stats',
       name: 'nbaStats',
       component: NBAStats,
+    },
+    {
+      path: '/nba-stats/:playerName',
+      name: 'PlayerStats',
+      component: PlayerStats,
     },
     {
       path: '/nba/trade-simulator',
@@ -105,6 +111,12 @@ const router = createRouter({
       component: WrestlingEditorialDetail,
     },
     // Admin Routes
+    {
+      path: '/admin/drafts',
+      name: 'savedDrafts',
+      component: () => import('@/views/admin/SavedDrafts.vue'),
+      meta: { requiresAdmin: true },
+    },
     {
       path: '/admin/dashboard',
       name: 'adminDashboard',

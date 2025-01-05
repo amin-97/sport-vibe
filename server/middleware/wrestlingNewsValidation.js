@@ -1,44 +1,66 @@
-// server/middleware/newsValidation.js
+// server/middleware/wrestlingNewsValidation.js
 const validateWrestlingNews = (req, res, next) => {
-  const { title, category, description, content } = req.body;
+  const { title, category, description, content, status, tags } = req.body;
   const errors = [];
 
-  // Title validation
-  if (!title) {
-    errors.push("Title is required");
-  } else if (title.length < 5 || title.length > 200) {
-    errors.push("Title must be between 5 and 200 characters");
+  // Status validation
+  if (status && !["draft", "published"].includes(status)) {
+    errors.push("Status must be either draft or published");
   }
 
-  // Category validation
-  const validWrestlingCategories = ["wwe", "aew"];
-  if (!category) {
-    errors.push("Category is required");
-  } else if (!validWrestlingCategories.includes(category)) {
-    errors.push("Invalid category. Must be one of: nba, wwe, aew");
+  // For drafts, only validate title and category
+  if (status === "draft") {
+    if (!title) {
+      errors.push("Title is required even for drafts");
+    } else if (title.length < 5 || title.length > 200) {
+      errors.push("Title must be between 5 and 200 characters");
+    }
+
+    const validWrestlingCategories = ["wwe", "aew"];
+    if (!category) {
+      errors.push("Category is required even for drafts");
+    } else if (!validWrestlingCategories.includes(category)) {
+      errors.push("Invalid category. Must be one of: wwe, aew");
+    }
+  } else {
+    // Full validation for published content
+    // Title validation
+    if (!title) {
+      errors.push("Title is required");
+    } else if (title.length < 5 || title.length > 200) {
+      errors.push("Title must be between 5 and 200 characters");
+    }
+
+    // Category validation
+    const validWrestlingCategories = ["wwe", "aew"];
+    if (!category) {
+      errors.push("Category is required");
+    } else if (!validWrestlingCategories.includes(category)) {
+      errors.push("Invalid category. Must be one of: wwe, aew");
+    }
+
+    // Description validation
+    if (!description) {
+      errors.push("Description is required");
+    } else if (description.length < 10 || description.length > 500) {
+      errors.push("Description must be between 10 and 500 characters");
+    }
+
+    // Content validation
+    if (!content) {
+      errors.push("Content is required");
+    } else if (content.length < 50) {
+      errors.push("Content must be at least 50 characters long");
+    }
   }
 
-  // Description validation
-  if (!description) {
-    errors.push("Description is required");
-  } else if (description.length < 10 || description.length > 500) {
-    errors.push("Description must be between 10 and 500 characters");
-  }
-
-  // Content validation
-  if (!content) {
-    errors.push("Content is required");
-  } else if (content.length < 50) {
-    errors.push("Content must be at least 50 characters long");
-  }
-
-  // Tags validation (optional)
-  if (req.body.tags) {
+  // Tags validation (optional for both draft and published)
+  if (tags) {
     try {
-      const tags = JSON.parse(req.body.tags);
-      if (!Array.isArray(tags)) {
+      const parsedTags = JSON.parse(tags);
+      if (!Array.isArray(parsedTags)) {
         errors.push("Tags must be an array");
-      } else if (tags.some((tag) => typeof tag !== "string")) {
+      } else if (parsedTags.some((tag) => typeof tag !== "string")) {
         errors.push("All tags must be strings");
       }
     } catch (error) {
@@ -46,7 +68,7 @@ const validateWrestlingNews = (req, res, next) => {
     }
   }
 
-  // Image validation (if provided)
+  // Image validation (optional for both draft and published)
   if (req.file) {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!allowedTypes.includes(req.file.mimetype)) {

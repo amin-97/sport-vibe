@@ -1,19 +1,26 @@
 {
   "cSpell.words": [
+    "ARENACAPACITY",
     "axios",
+    "chartjs",
     "Danielson",
     "defval",
+    "DLEAGUEAFFILIATION",
     "DREB",
     "firebaseapp",
     "firebasestorage",
+    "GENERALMANAGER",
+    "HEADCOACH",
     "heroicons",
     "Knicks",
     "lucide",
+    "maxlength",
     "OREB",
     "Orton",
     "sportvibe",
     "superkick",
     "tiptap",
-    "VITE"
+    "VITE",
+    "YEARFOUNDED"
   ]
 }
