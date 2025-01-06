@@ -49,7 +49,7 @@ const formatDate = (date) => {
 const fetchEditorials = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('/api/nba/editorials')
+    const { data } = await axios.get('/api/nba-editorials')
     editorials.value = data
   } catch (err) {
     console.error('Error fetching editorials:', err)

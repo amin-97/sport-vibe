@@ -96,7 +96,7 @@
               </div>
             </div>
             <!-- Add this after the Admin Dashboard dropdown in HeaderComp -->
-            <router-link
+            <!-- <router-link
               to="/admin/drafts"
               class="text-gray-300 hover:text-white relative px-3 py-2 rounded-md text-sm font-medium inline-flex items-center"
             >
@@ -104,7 +104,7 @@
               <span
                 class="absolute left-0 bottom-0 w-full h-0.5 bg-orange-500 transform scale-x-0 transition-transform duration-300 ease-out origin-left group-hover:scale-x-100 mt-1"
               ></span>
-            </router-link>
+            </router-link> -->
           </template>
 
           <!-- NBA Dropdown -->

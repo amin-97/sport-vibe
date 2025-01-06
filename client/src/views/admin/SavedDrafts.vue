@@ -149,7 +149,7 @@ const router = useRouter()
 const tabs = [
   { label: 'NBA News', value: 'nbaNews' },
   { label: 'NBA Editorials', value: 'nbaEditorials' },
-  { label: 'Wrestling Results', value: 'wrestlingResults' },
+  // { label: 'Wrestling Results', value: 'wrestlingResults' },
   { label: 'Wrestling News', value: 'wrestlingNews' },
   { label: 'Wrestling Editorials', value: 'wrestlingEditorials' },
 ]
@@ -199,11 +199,11 @@ const formatDate = (date) => {
 }
 
 const apiEndpoints = {
-  nbaNews: '/api/nba/articles',
-  nbaEditorials: '/api/nba/editorials',
-  wrestlingResults: '/api/wrestling-results',
-  wrestlingNews: '/api/wrestling/news',
-  wrestlingEditorials: '/api/wrestling/editorials',
+  nbaNews: '/api/nba-news/drafts',
+  nbaEditorials: '/api/nba-editorials/drafts',
+  // wrestlingResults: '/api/wrestling-results',
+  wrestlingNews: '/api/wrestling-news/drafts',
+  wrestlingEditorials: '/api/wrestling-editorials/drafts',
 }
 
 async function fetchItems() {
@@ -221,11 +221,11 @@ async function fetchItems() {
 
 const handleResume = (item) => {
   const editRoutes = {
-    nbaNews: `/admin/write/nba/article/edit/${item.slug}`,
-    nbaEditorials: `/admin/write/nba/editorial/edit/${item.slug}`,
-    wrestlingResults: `/admin/write/results/edit/${item.slug}`,
-    wrestlingNews: `/admin/write/news/edit/${item.slug}`,
-    wrestlingEditorials: `/admin/write/editorial/edit/${item.slug}`,
+    nbaNews: `/admin/edit/nba/news/${item.slug}`,
+    nbaEditorials: `/admin/edit/nba/editorial/${item.slug}`,
+    // wrestlingResults: `/admin/edit/results/${item.slug}`,
+    wrestlingNews: `/admin/edit/wrestling/news/${item.slug}`,
+    wrestlingEditorials: `/admin/edit/wrestling/editorial/${item.slug}`,
   }
   router.push(editRoutes[currentTab.value])
 }

@@ -26,23 +26,25 @@ const readExcelFile = (filePath) => {
 
 const cleanData = (rawData) => {
   return rawData.map((row) => {
-    // Log the raw row to see its exact structure
-    console.log("Raw row:", JSON.stringify(row, null, 2));
+    // Convert scientific notation to string for TEAM_ID
+    const teamId = row["TEAM_ID"]
+      ? typeof row["TEAM_ID"] === "number"
+        ? row["TEAM_ID"].toFixed(0)
+        : row["TEAM_ID"]
+      : "";
 
     return {
-      TeamID: row["TEAM_ID"] ? row["TEAM_ID"].toString() : "",
-      ABBREVIATION: row["ABBREVIATION"] || "",
-      NICKNAME: row["NICKNAME"] || "",
+      TEAM_ID: teamId,
+      ABBREVIATION: (row["ABBREVIATION"] || "").trim().toUpperCase(),
+      NICKNAME: (row["NICKNAME"] || "").trim(),
       YEARFOUNDED: row["YEARFOUNDED"] ? Number(row["YEARFOUNDED"]) : 0,
-      CITY: row["CITY"] || "",
-      ARENA: row["ARENA"] || "",
+      CITY: (row["CITY"] || "").trim(),
+      ARENA: (row["ARENA"] || "").trim(),
       ARENACAPACITY: row["ARENACAPACITY"] ? Number(row["ARENACAPACITY"]) : 0,
-      OWNER: row["OWNER"] || "",
-      GENERALMANAGER: row["GENERALMANAGER"] || "",
-      HEADCOACH: row["HEADCOACH"] || "",
-      DLEAGUEAFFILIATION: row["DLEAGUEAFFILIATION"] || "",
-      lastUpdated: new Date(),
-      dataSource: "import",
+      OWNER: (row["OWNER"] || "").trim(),
+      GENERALMANAGER: (row["GENERALMANAGER"] || "").trim(),
+      HEADCOACH: (row["HEADCOACH"] || "").trim(),
+      DLEAGUEAFFILIATION: (row["DLEAGUEAFFILIATION"] || "").trim() || null,
     };
   });
 };
@@ -55,6 +57,17 @@ const importData = async (data) => {
     });
     console.log("Connected to MongoDB");
 
+    // Optional: Validate data before import
+    const validationErrors = data.filter((team) => {
+      // Add more validation as needed
+      return !team.TEAM_ID || !team.ABBREVIATION || !team.NICKNAME;
+    });
+
+    if (validationErrors.length > 0) {
+      console.error("Validation Errors:", validationErrors);
+      throw new Error(`${validationErrors.length} teams failed validation`);
+    }
+
     await TeamDetails.deleteMany({});
     console.log("Cleared existing data");
 
@@ -63,7 +76,7 @@ const importData = async (data) => {
     });
     console.log(`Successfully imported ${result.length} records`);
 
-    const uniqueTeamCount = new Set(data.map((row) => row.TeamID)).size;
+    const uniqueTeamCount = new Set(data.map((row) => row.TEAM_ID)).size;
     console.log(`Number of unique team details: ${uniqueTeamCount}`);
 
     return result;
@@ -86,6 +99,12 @@ const main = async () => {
 
     const cleanedData = cleanData(rawData);
     console.log("Data cleaned and formatted");
+
+    // Log first few entries to verify
+    console.log(
+      "First 3 entries:",
+      JSON.stringify(cleanedData.slice(0, 3), null, 2)
+    );
 
     await importData(cleanedData);
     console.log("Import completed successfully");

@@ -1,4 +1,4 @@
-// server/models/News.js
+// server/models/WrestlingNews.js
 const mongoose = require("mongoose");
 
 const wrestlingNewsSchema = new mongoose.Schema(
@@ -6,19 +6,34 @@ const wrestlingNewsSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      validate: {
+        validator: function (v) {
+          return this.status === "draft" ? v.length >= 1 : v.length >= 5;
+        },
+        message: (props) =>
+          props.value.length < 1
+            ? "Title is required"
+            : "Title must be at least 5 characters for published content",
+      },
     },
     category: {
       type: String,
-      enum: ["nba", "wwe", "aew"],
-      required: true,
+      enum: ["wwe", "aew"],
+      required: function () {
+        return this.status === "published";
+      },
     },
     description: {
       type: String,
-      required: true,
+      required: function () {
+        return this.status === "published";
+      },
     },
     content: {
       type: String,
-      required: true,
+      required: function () {
+        return this.status === "published";
+      },
     },
     image: {
       url: String,
@@ -41,7 +56,11 @@ const wrestlingNewsSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["draft", "published"],
-      default: "published",
+      default: "draft",
+    },
+    views: {
+      type: Number,
+      default: 0,
     },
   },
   {
@@ -62,5 +81,11 @@ wrestlingNewsSchema.pre("save", function (next) {
   }
   next();
 });
+
+// Add indexes for better query performance
+wrestlingNewsSchema.index({ status: 1, createdAt: -1 });
+wrestlingNewsSchema.index({ category: 1, status: 1 });
+wrestlingNewsSchema.index({ slug: 1 }, { unique: true });
+wrestlingNewsSchema.index({ author: 1, status: 1 });
 
 module.exports = mongoose.model("WrestlingNews", wrestlingNewsSchema);

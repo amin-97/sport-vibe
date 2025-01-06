@@ -69,7 +69,7 @@ const wrestlingResultSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["draft", "published"],
-      default: "published",
+      default: "draft",
     },
   },
   {

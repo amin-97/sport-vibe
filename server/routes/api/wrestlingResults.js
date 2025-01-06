@@ -54,4 +54,12 @@ router.put(
   wrestlingResultsController.updateWrestlingResult
 );
 
+// Add this to your routes in wrestlingResults.js
+router.delete(
+  "/slug/:slug",
+  verifyToken,
+  isAdmin,
+  wrestlingResultsController.deleteWrestlingResult
+);
+
 module.exports = router;

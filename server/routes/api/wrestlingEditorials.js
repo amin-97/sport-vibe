@@ -1,39 +1,31 @@
-// server/routes/api/editorials.js
+// server/routes/api/wrestlingEditorials.js
 const express = require("express");
 const router = express.Router();
 const { verifyToken, isAdmin } = require("../../middleware/auth");
-const validateWrestlingEditorial = require("../../middleware/wrestlingEditorialValidation");
-const wrestlingEditorialController = require("../../controllers/wrestlingEditorialController");
+const {
+  validateWrestlingEditorial,
+} = require("../../middleware/editorialValidation");
+const {
+  wrestlingEditorialController,
+} = require("../../controllers/editorialController");
 const upload = require("../../middleware/multer");
 
-// Check if all imports are properly defined
-console.log("Checking middleware and controller:", {
-  validateWrestlingEditorial: !!validateWrestlingEditorial,
-  wrestlingEditorialController:
-    !!wrestlingEditorialController?.createWrestlingEditorial,
-  verifyToken: !!verifyToken,
-  isAdmin: !!isAdmin,
-  upload: !!upload,
-});
+router.get("/", wrestlingEditorialController.getAllEditorials);
+router.get("/slug/:slug", wrestlingEditorialController.getEditorialBySlug);
+router.get(
+  "/drafts",
+  verifyToken,
+  isAdmin,
+  wrestlingEditorialController.getDrafts
+);
 
-// Define routes
-router.get("/", wrestlingEditorialController.getAllWrestlingEditorials);
-router.get("/:id", wrestlingEditorialController.getWrestlingEditorialById);
-router.get(
-  "/category/:category",
-  wrestlingEditorialController.getWrestlingEditorialsByCategory
-);
-router.get(
-  "/slug/:slug",
-  wrestlingEditorialController.getWrestlingEditorialBySlug
-);
 router.post(
   "/",
   verifyToken,
   isAdmin,
   upload.single("image"),
   validateWrestlingEditorial,
-  wrestlingEditorialController.createWrestlingEditorial
+  wrestlingEditorialController.createEditorial
 );
 
 router.put(
@@ -42,22 +34,14 @@ router.put(
   isAdmin,
   upload.single("image"),
   validateWrestlingEditorial,
-  wrestlingEditorialController.updateWrestlingEditorialBySlug // Make sure this method exists
+  wrestlingEditorialController.updateEditorialBySlug
 );
 
 router.delete(
   "/slug/:slug",
   verifyToken,
   isAdmin,
-  wrestlingEditorialController.deleteWrestlingEditorial
-);
-
-// Add to wrestlingEditorials.js routes
-router.get(
-  "/drafts",
-  verifyToken,
-  isAdmin,
-  wrestlingEditorialController.getWrestlingEditorialDrafts
+  wrestlingEditorialController.deleteEditorial
 );
 
 module.exports = router;

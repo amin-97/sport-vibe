@@ -39,7 +39,7 @@ app.use("/api/test", testRoutes);
 const wrestlingResultsRoutes = require("./routes/api/wrestlingResults");
 app.use("/api/wrestling-results", wrestlingResultsRoutes);
 
-const wrestlingNewsRoutes = require("./routes/api/wrestingNews");
+const wrestlingNewsRoutes = require("./routes/api/wrestlingNews");
 app.use("/api/wrestling-news", wrestlingNewsRoutes);
 
 const wrestlingEditorialRoutes = require("./routes/api/wrestlingEditorials");

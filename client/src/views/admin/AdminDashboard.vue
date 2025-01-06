@@ -248,13 +248,28 @@ const handleDelete = async (item) => {
   if (!confirm('Are you sure you want to delete this item?')) return
 
   try {
-    await axios.delete(`${apiEndpoints[currentTab.value]}/${item._id}`)
-    items.value = items.value.filter((i) => i._id !== item._id)
+    await axios.delete(`${apiEndpoints[currentTab.value]}/slug/${item.slug}`)
+    items.value = items.value.filter((i) => i.slug !== item.slug)
   } catch (err) {
     console.error('Error deleting item:', err)
-    alert('Failed to delete item')
+    if (err.response?.status === 404) {
+      alert('The item you are trying to delete was not found. It may have already been deleted.')
+    } else {
+      alert('Failed to delete item. Please try again later.')
+    }
   }
 }
+// const handleDelete = async (item) => {
+//   if (!confirm('Are you sure you want to delete this item?')) return
+
+//   try {
+//     await axios.delete(`${apiEndpoints[currentTab.value]}/${item._id}`)
+//     items.value = items.value.filter((i) => i._id !== item._id)
+//   } catch (err) {
+//     console.error('Error deleting item:', err)
+//     alert('Failed to delete item')
+//   }
+// }
 
 watch(currentTab, fetchItems)
 

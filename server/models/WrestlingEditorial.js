@@ -1,4 +1,4 @@
-// server/models/Editorial.js
+// server/models/WrestlingEditorial.js
 const mongoose = require("mongoose");
 
 const wrestlingEditorialSchema = new mongoose.Schema(
@@ -6,20 +6,35 @@ const wrestlingEditorialSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      validate: {
+        validator: function (v) {
+          return this.status === "draft" ? v.length >= 1 : v.length >= 5;
+        },
+        message: (props) =>
+          props.value.length < 1
+            ? "Title is required"
+            : "Title must be at least 5 characters for published content",
+      },
     },
     category: {
       type: String,
       enum: ["nba", "wrestling"],
-      required: true,
+      required: function () {
+        return this.status === "published";
+      },
     },
     summary: {
       type: String,
-      required: true,
+      required: function () {
+        return this.status === "published";
+      },
       maxLength: 1000,
     },
     content: {
       type: String,
-      required: true,
+      required: function () {
+        return this.status === "published";
+      },
     },
     image: {
       url: String,
@@ -28,7 +43,9 @@ const wrestlingEditorialSchema = new mongoose.Schema(
     keyArguments: [
       {
         type: String,
-        required: true,
+        required: function () {
+          return this.status === "published";
+        },
       },
     ],
     topics: [
@@ -48,7 +65,7 @@ const wrestlingEditorialSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["draft", "published"],
-      default: "published",
+      default: "draft",
     },
     views: {
       type: Number,
@@ -71,8 +88,10 @@ const wrestlingEditorialSchema = new mongoose.Schema(
       },
     ],
     readingTime: {
-      type: Number, // in minutes
-      required: true,
+      type: Number,
+      required: function () {
+        return this.status === "published";
+      },
     },
   },
   {
@@ -91,7 +110,7 @@ wrestlingEditorialSchema.pre("save", function (next) {
   }
 
   // Calculate reading time if content is modified
-  if (this.isModified("content")) {
+  if (this.isModified("content") && this.content) {
     const wordsPerMinute = 200;
     const wordCount = this.content.split(/\s+/).length;
     this.readingTime = Math.ceil(wordCount / wordsPerMinute);

@@ -1,15 +1,15 @@
-// server/routes/api/nbaArticles.js
 const express = require("express");
 const router = express.Router();
 const { verifyToken, isAdmin } = require("../../middleware/auth");
-const { validateNBANews } = require("../../middleware/nbaValidation");
-const nbaNewsController = require("../../controllers/nbaNewsController");
+const { validateNBANews } = require("../../middleware/newsValidation");
+const { nbaNewsController } = require("../../controllers/newsController");
 const upload = require("../../middleware/multer");
 
-// Public routes
-router.get("/", nbaNewsController.getAllNews);
-router.get("/slug/:slug", nbaNewsController.getNewsBySlug);
+// Public routes - order matters, put specific routes before parameterized ones
+router.get("/drafts", verifyToken, isAdmin, nbaNewsController.getDrafts);
 router.get("/category/:category", nbaNewsController.getNewsByCategory);
+router.get("/slug/:slug", nbaNewsController.getNewsBySlug);
+router.get("/", nbaNewsController.getAllNews);
 
 // Protected routes
 router.post(
@@ -20,7 +20,6 @@ router.post(
   validateNBANews,
   nbaNewsController.createNews
 );
-
 router.put(
   "/slug/:slug",
   verifyToken,
@@ -29,7 +28,11 @@ router.put(
   validateNBANews,
   nbaNewsController.updateNewsBySlug
 );
-
-router.delete("/:id", verifyToken, isAdmin, nbaNewsController.deleteNews);
+router.delete(
+  "/slug/:slug",
+  verifyToken,
+  isAdmin,
+  nbaNewsController.deleteNews
+);
 
 module.exports = router;

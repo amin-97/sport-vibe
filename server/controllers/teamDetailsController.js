@@ -117,25 +117,31 @@ const teamDetailsController = {
 
   // Search team details
   // In teamDetailsController.js
+  // In teamDetailsController.js
   searchTeamDetails: async (req, res) => {
     try {
       const { query } = req.query;
+      console.log("Search Query Received:", query); // Add this logging
+
       const teamDetails = await TeamDetails.find({
         $or: [
           { CITY: new RegExp(query, "i") },
           { NICKNAME: new RegExp(query, "i") },
           { ABBREVIATION: new RegExp(query, "i") },
-          // Add more search fields as needed
-          { TEAM_ID: query }, // In case query is a team ID
+          { TEAM_ID: query },
         ],
       }).limit(10);
 
+      console.log("Search Results:", teamDetails); // Add this logging
+
       if (teamDetails.length === 0) {
+        console.log(`No team found for query: ${query}`); // Add this logging
         return res.status(404).json({ message: "No team details found" });
       }
 
       res.json(teamDetails);
     } catch (error) {
+      console.error("Search Error:", error);
       res.status(500).json({ message: error.message });
     }
   },

@@ -2,16 +2,18 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken, isAdmin } = require("../../middleware/auth");
-const { validateNBAEditorial } = require("../../middleware/nbaValidation");
-const nbaEditorialController = require("../../controllers/nbaEditorialController");
+const {
+  validateNBAEditorial,
+} = require("../../middleware/editorialValidation");
+const {
+  nbaEditorialController,
+} = require("../../controllers/editorialController");
 const upload = require("../../middleware/multer");
 
-// Public routes
 router.get("/", nbaEditorialController.getAllEditorials);
 router.get("/slug/:slug", nbaEditorialController.getEditorialBySlug);
-router.get("/featured", nbaEditorialController.getFeaturedEditorials);
+router.get("/drafts", verifyToken, isAdmin, nbaEditorialController.getDrafts);
 
-// Protected routes
 router.post(
   "/",
   verifyToken,
@@ -21,7 +23,6 @@ router.post(
   nbaEditorialController.createEditorial
 );
 
-// Add this route to the existing routes
 router.put(
   "/slug/:slug",
   verifyToken,
@@ -32,7 +33,7 @@ router.put(
 );
 
 router.delete(
-  "/:id",
+  "/slug/:slug",
   verifyToken,
   isAdmin,
   nbaEditorialController.deleteEditorial

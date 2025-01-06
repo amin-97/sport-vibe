@@ -116,6 +116,38 @@ exports.getDrafts = async (req, res) => {
   }
 };
 
+// Add this to wrestlingResultsController.js
+exports.deleteWrestlingResult = async (req, res) => {
+  try {
+    const result = await WrestlingResult.findOne({ slug: req.params.slug });
+    if (!result) {
+      return res.status(404).json({ message: "Result not found" });
+    }
+
+    // Check if user is the author
+    if (result.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    // Delete associated images if they exist
+    if (result.coverImage?.publicId) {
+      await deleteFromS3(result.coverImage.publicId);
+    }
+
+    if (result.additionalImages?.length) {
+      await Promise.all(
+        result.additionalImages.map((img) => deleteFromS3(img.publicId))
+      );
+    }
+
+    await result.deleteOne();
+    res.json({ message: "Wrestling result deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting result:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // In server/controllers/wrestlingResultsController.js
 exports.updateWrestlingResult = async (req, res) => {
   try {
