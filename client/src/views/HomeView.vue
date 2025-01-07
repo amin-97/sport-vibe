@@ -133,13 +133,13 @@ const nbaFeatures = [
   {
     title: 'Player Stats',
     description: 'Interactive graphs and detailed statistics for every NBA player',
-    link: '/nba/stats',
+    link: '/nba-stats',
   },
-  {
-    title: 'Trade Simulator',
-    description: 'Create and analyze potential NBA trades with our advanced simulator',
-    link: '/nba/trade-simulator',
-  },
+  // {
+  //   title: 'Trade Simulator',
+  //   description: 'Create and analyze potential NBA trades with our advanced simulator',
+  //   link: '/nba/trade-simulator',
+  // },
   {
     title: 'Team Rosters',
     description: 'Complete team rosters with detailed player information',
