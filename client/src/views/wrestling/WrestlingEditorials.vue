@@ -88,34 +88,44 @@ onMounted(fetchEditorials)
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Featured Editorial -->
         <div v-if="featuredEditorial" class="lg:col-span-2">
-          <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <img
-              :src="featuredEditorial.image?.url || '/placeholder-image.png'"
-              :alt="featuredEditorial.title"
-              class="w-full h-64 object-cover"
-            />
-            <div class="p-6">
-              <span class="text-sm text-primary font-medium">Featured</span>
-              <h2 class="mt-2 text-2xl font-bold text-gray-900">{{ featuredEditorial.title }}</h2>
-              <p class="mt-4 text-gray-600">{{ featuredEditorial.summary }}</p>
-              <div class="mt-6 flex items-center">
-                <img
-                  :src="featuredEditorial.author?.photoURL || '/placeholder-image.png'"
-                  :alt="featuredEditorial.author?.displayName"
-                  class="w-10 h-10 rounded-full"
-                />
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">
-                    {{ featuredEditorial.author?.displayName }}
-                  </p>
-                  <p class="text-sm text-gray-500">{{ formatDate(featuredEditorial.createdAt) }}</p>
-                </div>
-                <span class="ml-auto text-sm text-gray-500"
-                  >{{ featuredEditorial.readingTime }} min read</span
+          <router-link :to="`/wrestling/editorials/${featuredEditorial.slug}`" class="block group">
+            <div
+              class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
+            >
+              <img
+                :src="featuredEditorial.image?.url || '/placeholder-image.png'"
+                :alt="featuredEditorial.title"
+                class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div class="p-6">
+                <span class="text-sm text-primary font-medium">Featured</span>
+                <h2
+                  class="mt-2 text-2xl font-bold text-gray-900 group-hover:text-primary transition-colors"
                 >
+                  {{ featuredEditorial.title }}
+                </h2>
+                <p class="mt-4 text-gray-600">{{ featuredEditorial.summary }}</p>
+                <div class="mt-6 flex items-center">
+                  <img
+                    :src="featuredEditorial.author?.photoURL || '/placeholder-image.png'"
+                    :alt="featuredEditorial.author?.displayName"
+                    class="w-10 h-10 rounded-full"
+                  />
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ featuredEditorial.author?.displayName }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      {{ formatDate(featuredEditorial.createdAt) }}
+                    </p>
+                  </div>
+                  <span class="ml-auto text-sm text-gray-500">
+                    {{ featuredEditorial.readingTime }} min read
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </router-link>
         </div>
 
         <!-- Recent Editorials Sidebar -->
@@ -124,9 +134,9 @@ onMounted(fetchEditorials)
           <div
             v-for="editorial in recentEditorials"
             :key="editorial._id"
-            class="bg-white shadow-lg rounded-lg overflow-hidden"
+            class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 group hover:shadow-xl"
           >
-            <div class="p-4">
+            <router-link :to="`/wrestling/editorials/${editorial.slug}`" class="block p-4">
               <div class="flex flex-wrap gap-2 mb-2">
                 <span
                   v-for="topic in editorial.topics"
@@ -136,8 +146,14 @@ onMounted(fetchEditorials)
                   {{ topic }}
                 </span>
               </div>
-              <h3 class="text-lg font-semibold text-gray-900">{{ editorial.title }}</h3>
-              <p class="mt-2 text-sm text-gray-600 line-clamp-2">{{ editorial.summary }}</p>
+              <h3
+                class="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors"
+              >
+                {{ editorial.title }}
+              </h3>
+              <p class="mt-2 text-sm text-gray-600 line-clamp-2">
+                {{ editorial.summary }}
+              </p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="flex items-center">
                   <img
@@ -145,13 +161,13 @@ onMounted(fetchEditorials)
                     :alt="editorial.author?.displayName"
                     class="w-8 h-8 rounded-full"
                   />
-                  <span class="ml-2 text-sm text-gray-600">{{
-                    editorial.author?.displayName
-                  }}</span>
+                  <span class="ml-2 text-sm text-gray-600">
+                    {{ editorial.author?.displayName }}
+                  </span>
                 </div>
-                <span class="text-sm text-gray-500">{{ editorial.readingTime }} min read</span>
+                <span class="text-sm text-gray-500"> {{ editorial.readingTime }} min read </span>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -161,13 +177,16 @@ onMounted(fetchEditorials)
         <div
           v-for="editorial in filteredEditorials"
           :key="editorial._id"
-          class="bg-white shadow-lg rounded-lg overflow-hidden"
+          class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 group hover:shadow-xl hover:-translate-y-2"
         >
-          <img
-            :src="editorial.image?.url || '/placeholder-image.png'"
-            :alt="editorial.title"
-            class="w-full h-48 object-cover"
-          />
+          <router-link :to="`/wrestling/editorials/${editorial.slug}`" class="block">
+            <img
+              :src="editorial.image?.url || '/placeholder-image.png'"
+              :alt="editorial.title"
+              class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+          </router-link>
+
           <div class="p-6">
             <div class="flex flex-wrap gap-2 mb-2">
               <span
@@ -178,8 +197,17 @@ onMounted(fetchEditorials)
                 {{ topic }}
               </span>
             </div>
-            <h3 class="text-xl font-semibold text-gray-900">{{ editorial.title }}</h3>
+
+            <router-link :to="`/wrestling/editorials/${editorial.slug}`" class="block">
+              <h3
+                class="text-xl font-semibold text-gray-900 group-hover:text-primary transition-colors"
+              >
+                {{ editorial.title }}
+              </h3>
+            </router-link>
+
             <p class="mt-2 text-gray-600">{{ editorial.summary }}</p>
+
             <div class="mt-4 flex items-center justify-between">
               <div class="flex items-center">
                 <img
@@ -187,9 +215,30 @@ onMounted(fetchEditorials)
                   :alt="editorial.author?.displayName"
                   class="w-8 h-8 rounded-full"
                 />
-                <span class="ml-2 text-sm text-gray-600">{{ editorial.author?.displayName }}</span>
+                <span class="ml-2 text-sm text-gray-600">
+                  {{ editorial.author?.displayName }}
+                </span>
               </div>
-              <span class="text-sm text-gray-500">{{ editorial.readingTime }} min read</span>
+              <router-link
+                :to="`/wrestling/editorials/${editorial.slug}`"
+                class="text-sm text-primary hover:text-primary/90 inline-flex items-center group/link"
+              >
+                Read More
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </router-link>
             </div>
           </div>
         </div>

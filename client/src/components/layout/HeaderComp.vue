@@ -147,11 +147,11 @@
                 class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
                 >Player Stats</router-link
               >
-              <router-link
+              <!-- <router-link
                 to="/nba/trade-simulator"
                 class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"
                 >Trade Simulator</router-link
-              >
+              > -->
               <router-link
                 to="/nba/teams"
                 class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700"

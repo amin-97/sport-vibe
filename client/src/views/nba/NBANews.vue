@@ -112,48 +112,59 @@ onMounted(fetchArticles)
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Featured Article -->
         <div v-if="featuredNews" class="lg:col-span-2">
-          <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-            <img
-              :src="featuredNews.image?.url || '/placeholder-image.png'"
-              :alt="featuredNews.title"
-              class="w-full h-64 object-cover"
-            />
-            <div class="p-6">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full">
-                  {{ featuredNews.category }}
-                </span>
-                <span class="text-sm text-gray-500">
-                  {{ formatDate(featuredNews.createdAt) }}
-                </span>
+          <router-link :to="`/nba/news/${featuredNews.slug}`" class="block">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+              <img
+                :src="featuredNews.image?.url || '/placeholder-image.png'"
+                :alt="featuredNews.title"
+                class="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+              />
+              <div class="p-6">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full">
+                    {{ featuredNews.category }}
+                  </span>
+                  <span class="text-sm text-gray-500">
+                    {{ formatDate(featuredNews.createdAt) }}
+                  </span>
+                </div>
+                <h2
+                  class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors"
+                >
+                  {{ featuredNews.title }}
+                </h2>
+                <p class="text-gray-600 mb-4">
+                  {{ featuredNews.description }}
+                </p>
+                <div
+                  class="inline-flex items-center text-primary hover:text-primary/90 font-medium"
+                >
+                  Read Full Story →
+                </div>
               </div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-3">
-                {{ featuredNews.title }}
-              </h2>
-              <p class="text-gray-600 mb-4">
-                {{ featuredNews.description }}
-              </p>
-              <router-link
-                :to="`/nba/news/${featuredNews.slug}`"
-                class="inline-flex items-center text-primary hover:text-primary/90 font-medium"
-              >
-                Read Full Story →
-              </router-link>
             </div>
-          </div>
+          </router-link>
 
           <!-- Articles Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <div
               v-for="news in filteredNews"
               :key="news._id"
-              class="bg-white shadow-lg rounded-lg overflow-hidden"
+              class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 group hover:shadow-xl hover:-translate-y-2 hover:scale-105"
             >
-              <img
-                :src="news.image?.url || '/placeholder-image.png'"
-                :alt="news.title"
-                class="w-full h-48 object-cover"
-              />
+              <router-link :to="`/nba/news/${news.slug}`" class="block">
+                <div class="relative overflow-hidden">
+                  <img
+                    :src="news.image?.url || '/placeholder-image.png'"
+                    :alt="news.title"
+                    class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div
+                    class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"
+                  ></div>
+                </div>
+              </router-link>
+
               <div class="p-4">
                 <div class="flex items-center gap-2 mb-2">
                   <span class="text-sm text-primary">{{ news.category }}</span>
@@ -161,10 +172,19 @@ onMounted(fetchArticles)
                     {{ formatDate(news.createdAt) }}
                   </span>
                 </div>
-                <h3 class="text-lg font-semibold mb-2">{{ news.title }}</h3>
+
+                <router-link :to="`/nba/news/${news.slug}`" class="block">
+                  <h3
+                    class="text-lg font-semibold mb-2 group-hover:text-primary transition-colors duration-300"
+                  >
+                    {{ news.title }}
+                  </h3>
+                </router-link>
+
                 <p class="text-sm text-gray-600 mb-3">
                   {{ news.description }}
                 </p>
+
                 <div class="flex flex-wrap gap-2 mb-3">
                   <span
                     v-for="tag in news.tags"
@@ -174,11 +194,26 @@ onMounted(fetchArticles)
                     {{ tag }}
                   </span>
                 </div>
+
                 <router-link
                   :to="`/nba/news/${news.slug}`"
-                  class="text-sm text-primary hover:text-primary/90 font-medium"
+                  class="text-sm text-primary hover:text-primary/90 font-medium inline-flex items-center group/link"
                 >
-                  Read More →
+                  Read More
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
                 </router-link>
               </div>
             </div>

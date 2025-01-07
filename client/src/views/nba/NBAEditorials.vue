@@ -1,4 +1,3 @@
-// src/views/nba/EditorialsView.vue
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
@@ -108,61 +107,62 @@ onMounted(fetchEditorials)
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Featured Editorial -->
       <div v-if="featuredEditorial" class="lg:col-span-2">
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <img
-            :src="featuredEditorial.image?.url || '/placeholder-image.png'"
-            :alt="featuredEditorial.title"
-            class="w-full h-64 object-cover"
-          />
-          <div class="p-6">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full"
-                >Featured</span
-              >
-              <span class="text-sm text-gray-500"
-                >{{ featuredEditorial.readingTime }} min read</span
-              >
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-3">
-              {{ featuredEditorial.title }}
-            </h2>
-            <p class="text-gray-600 mb-4">
-              {{ featuredEditorial.summary }}
-            </p>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <span
-                v-for="topic in featuredEditorial.topics"
-                :key="topic"
-                class="px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded"
-              >
-                {{ topic }}
-              </span>
-            </div>
-            <div class="flex items-center justify-between mt-6">
-              <div class="flex items-center">
-                <img
-                  :src="featuredEditorial.author?.photoURL || '/placeholder-image.png'"
-                  :alt="featuredEditorial.author?.displayName"
-                  class="w-10 h-10 rounded-full"
-                />
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">
-                    {{ featuredEditorial.author?.displayName }}
-                  </p>
-                  <p class="text-sm text-gray-500">
-                    {{ formatDate(featuredEditorial.createdAt) }}
-                  </p>
-                </div>
+        <router-link :to="`/nba/editorials/${featuredEditorial.slug}`" class="block group">
+          <div
+            class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
+          >
+            <img
+              :src="featuredEditorial.image?.url || '/placeholder-image.png'"
+              :alt="featuredEditorial.title"
+              class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full"
+                  >Featured</span
+                >
+                <span class="text-sm text-gray-500"
+                  >{{ featuredEditorial.readingTime }} min read</span
+                >
               </div>
-              <router-link
-                :to="`/nba/editorials/${featuredEditorial.slug}`"
-                class="text-primary hover:text-primary/90 font-medium"
+              <h2
+                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors"
               >
-                Read Article →
-              </router-link>
+                {{ featuredEditorial.title }}
+              </h2>
+              <p class="text-gray-600 mb-4">
+                {{ featuredEditorial.summary }}
+              </p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span
+                  v-for="topic in featuredEditorial.topics"
+                  :key="topic"
+                  class="px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded"
+                >
+                  {{ topic }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between mt-6">
+                <div class="flex items-center">
+                  <img
+                    :src="featuredEditorial.author?.photoURL || '/placeholder-image.png'"
+                    :alt="featuredEditorial.author?.displayName"
+                    class="w-10 h-10 rounded-full"
+                  />
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ featuredEditorial.author?.displayName }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      {{ formatDate(featuredEditorial.createdAt) }}
+                    </p>
+                  </div>
+                </div>
+                <div class="text-primary hover:text-primary/90 font-medium">Read Article →</div>
+              </div>
             </div>
           </div>
-        </div>
+        </router-link>
       </div>
 
       <!-- Sidebar -->
@@ -173,19 +173,18 @@ onMounted(fetchEditorials)
             <div
               v-for="editorial in popularEditorials"
               :key="editorial._id"
-              class="group cursor-pointer border-b last:border-0 pb-4 last:pb-0"
+              class="group cursor-pointer border-b last:border-0 pb-4 last:pb-0 hover:bg-gray-50 transition-colors rounded-lg p-2"
             >
-              <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs text-primary"> {{ editorial.readingTime }} min read </span>
-                <span class="text-xs text-gray-500">
-                  {{ editorial.topics[0] }}
-                </span>
-              </div>
-              <router-link
-                :to="`/nba/editorials/${editorial.slug}`"
-                class="text-sm font-medium group-hover:text-primary"
-              >
-                {{ editorial.title }}
+              <router-link :to="`/nba/editorials/${editorial.slug}`" class="block">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-xs text-primary"> {{ editorial.readingTime }} min read </span>
+                  <span class="text-xs text-gray-500">
+                    {{ editorial.topics[0] }}
+                  </span>
+                </div>
+                <h3 class="text-sm font-medium group-hover:text-primary transition-colors">
+                  {{ editorial.title }}
+                </h3>
               </router-link>
             </div>
           </div>
@@ -198,20 +197,30 @@ onMounted(fetchEditorials)
       <div
         v-for="editorial in remainingEditorials"
         :key="editorial._id"
-        class="bg-white shadow-lg rounded-lg overflow-hidden"
+        class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 group hover:shadow-xl hover:-translate-y-2"
       >
-        <img
-          :src="editorial.image?.url || '/placeholder-image.png'"
-          :alt="editorial.title"
-          class="w-full h-48 object-cover"
-        />
+        <router-link :to="`/nba/editorials/${editorial.slug}`" class="block">
+          <img
+            :src="editorial.image?.url || '/placeholder-image.png'"
+            :alt="editorial.title"
+            class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+          />
+        </router-link>
+
         <div class="p-6">
           <div class="flex items-center gap-2 mb-3">
             <span class="text-sm text-primary">{{ editorial.topics[0] }}</span>
             <span class="text-sm text-gray-500">{{ editorial.readingTime }} min read</span>
           </div>
-          <h3 class="text-xl font-semibold mb-2">{{ editorial.title }}</h3>
+
+          <router-link :to="`/nba/editorials/${editorial.slug}`" class="block">
+            <h3 class="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+              {{ editorial.title }}
+            </h3>
+          </router-link>
+
           <p class="text-gray-600 text-sm mb-4">{{ editorial.summary }}</p>
+
           <div class="flex flex-wrap gap-2 mb-4">
             <span
               v-for="topic in editorial.topics"
@@ -221,6 +230,7 @@ onMounted(fetchEditorials)
               {{ topic }}
             </span>
           </div>
+
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <img
@@ -234,9 +244,23 @@ onMounted(fetchEditorials)
             </div>
             <router-link
               :to="`/nba/editorials/${editorial.slug}`"
-              class="text-primary hover:text-primary/90 text-sm font-medium"
+              class="text-primary hover:text-primary/90 text-sm font-medium inline-flex items-center group/link"
             >
-              Read More →
+              Read More
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 ml-1 transition-transform group-hover/link:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
             </router-link>
           </div>
         </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
@@ -7,17 +7,19 @@ import axios from 'axios'
 const router = useRouter()
 
 // State
-const allPlayers = ref([]) // Store ALL players
+const allPlayers = ref([])
 const loading = ref(false)
 const error = ref(null)
 const searchQuery = ref('')
+const selectedTeam = ref('ALL')
 const currentPage = ref(1)
 const itemsPerPage = ref(50)
 const totalPages = ref(0)
 const totalRecords = ref(0)
+const sortBy = ref('name')
+const sortDirection = ref('asc')
 
 // Computed Properties
-// Get unique players first, sorted by last name
 const uniquePlayers = computed(() => {
   const playerMap = new Map()
 
@@ -30,27 +32,61 @@ const uniquePlayers = computed(() => {
     }
   })
 
-  return Array.from(playerMap.values()).sort((a, b) => {
-    const aLastName = a.DISPLAY_FIRST_LAST.split(' ').pop().toLowerCase()
-    const bLastName = b.DISPLAY_FIRST_LAST.split(' ').pop().toLowerCase()
-    return aLastName.localeCompare(bLastName)
-  })
+  return Array.from(playerMap.values())
 })
 
-const searchedPlayers = computed(() => {
-  if (!searchQuery.value) return uniquePlayers.value
+// Get unique team abbreviations for the filter dropdown
+const uniqueTeams = computed(() => {
+  const teams = new Set(uniquePlayers.value.map((player) => player.TEAM_ABBREVIATION))
+  return ['ALL', ...Array.from(teams).sort()]
+})
 
-  const query = searchQuery.value.toLowerCase()
-  return uniquePlayers.value.filter((player) =>
-    player.DISPLAY_FIRST_LAST.toLowerCase().includes(query),
-  )
+const searchedAndFilteredPlayers = computed(() => {
+  let filtered = uniquePlayers.value
+
+  // Apply search filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter((player) => player.DISPLAY_FIRST_LAST.toLowerCase().includes(query))
+  }
+
+  // Apply team filter
+  if (selectedTeam.value !== 'ALL') {
+    filtered = filtered.filter((player) => player.TEAM_ABBREVIATION === selectedTeam.value)
+  }
+
+  // Apply sorting
+  return filtered.sort((a, b) => {
+    let compareResult = 0
+
+    // Extract last names outside switch to avoid no-case-declarations
+    let aLastName, bLastName
+    if (sortBy.value === 'name') {
+      aLastName = a.DISPLAY_FIRST_LAST.split(' ').pop().toLowerCase()
+      bLastName = b.DISPLAY_FIRST_LAST.split(' ').pop().toLowerCase()
+    }
+
+    switch (sortBy.value) {
+      case 'name':
+        compareResult = aLastName.localeCompare(bLastName)
+        break
+      case 'team':
+        compareResult = a.TEAM_ABBREVIATION.localeCompare(b.TEAM_ABBREVIATION)
+        break
+      case 'age':
+        compareResult = a.PLAYER_AGE - b.PLAYER_AGE
+        break
+    }
+
+    return sortDirection.value === 'asc' ? compareResult : -compareResult
+  })
 })
 
 // Handle filtered and paginated players
 const filteredPlayers = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
-  return searchedPlayers.value.slice(start, end)
+  return searchedAndFilteredPlayers.value.slice(start, end)
 })
 
 // Methods
@@ -61,7 +97,7 @@ const fetchAllPlayers = async () => {
 
     const response = await axios.get('http://localhost:5000/api/stats/players', {
       params: {
-        limit: 1000, // Adjust as needed
+        limit: 1000,
       },
     })
 
@@ -81,8 +117,10 @@ const fetchAllPlayers = async () => {
 }
 
 const updatePaginationInfo = () => {
-  totalRecords.value = searchedPlayers.value.length
+  totalRecords.value = searchedAndFilteredPlayers.value.length
   totalPages.value = Math.ceil(totalRecords.value / itemsPerPage.value)
+  // Reset to first page when filters change
+  currentPage.value = 1
 }
 
 const handlePageChange = (newPage) => {
@@ -102,6 +140,27 @@ const navigateToPlayerStats = (player) => {
   })
 }
 
+const handleSort = (column) => {
+  if (sortBy.value === column) {
+    // If clicking the same column, toggle direction
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    // If clicking a new column, set it as the sort column and default to ascending
+    sortBy.value = column
+    sortDirection.value = 'asc'
+  }
+}
+
+const getSortIcon = (column) => {
+  if (sortBy.value !== column) return '↕️'
+  return sortDirection.value === 'asc' ? '↑' : '↓'
+}
+
+// Watch for filter changes
+watch([searchQuery, selectedTeam], () => {
+  updatePaginationInfo()
+})
+
 // Lifecycle Hooks
 onMounted(() => {
   fetchAllPlayers()
@@ -110,18 +169,30 @@ onMounted(() => {
 
 <template>
   <div class="container mx-auto p-4">
-    <!-- Header with Search -->
+    <!-- Header with Search and Filters -->
     <div class="mb-6">
       <h1 class="text-3xl font-bold mb-4">NBA Players</h1>
-      <div class="flex items-center">
-        <div class="relative flex-1 max-w-md">
+      <div class="flex flex-wrap gap-4 items-center">
+        <!-- Search Input -->
+        <div class="relative flex-1 min-w-[200px]">
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Search players..."
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            @input="updatePaginationInfo"
           />
+        </div>
+
+        <!-- Team Filter -->
+        <div class="min-w-[150px]">
+          <select
+            v-model="selectedTeam"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option v-for="team in uniqueTeams" :key="team" :value="team">
+              {{ team }}
+            </option>
+          </select>
         </div>
       </div>
     </div>
@@ -141,19 +212,22 @@ onMounted(() => {
           <thead class="bg-gray-50">
             <tr>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                @click="handleSort('name')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
-                Name
+                Name {{ getSortIcon('name') }}
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                @click="handleSort('team')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
-                Team
+                Team {{ getSortIcon('team') }}
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                @click="handleSort('age')"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
               >
-                Age
+                Age {{ getSortIcon('age') }}
               </th>
             </tr>
           </thead>
@@ -198,20 +272,25 @@ onMounted(() => {
       <p class="mt-2 text-gray-500">Loading players...</p>
     </div>
 
+    <!-- Results Summary -->
+    <div v-if="!loading && filteredPlayers.length > 0" class="mt-4 text-sm text-gray-600">
+      Showing {{ filteredPlayers.length }} of {{ totalRecords }} players
+    </div>
+
     <!-- Pagination -->
-    <div v-if="totalPages.value > 1" class="mt-4 flex justify-between items-center">
+    <div v-if="totalPages > 1" class="mt-4 flex justify-between items-center">
       <span class="text-sm text-gray-700"> Page {{ currentPage }} of {{ totalPages }} </span>
       <div class="flex space-x-2">
         <button
-          @click="handlePageChange(currentPage.value - 1)"
-          :disabled="currentPage.value === 1"
+          @click="handlePageChange(currentPage - 1)"
+          :disabled="currentPage === 1"
           class="px-4 py-2 border rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
         >
           Previous
         </button>
         <button
-          @click="handlePageChange(currentPage.value + 1)"
-          :disabled="currentPage.value === totalPages.value"
+          @click="handlePageChange(currentPage + 1)"
+          :disabled="currentPage === totalPages"
           class="px-4 py-2 border rounded-lg text-sm font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
         >
           Next

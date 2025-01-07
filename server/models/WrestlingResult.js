@@ -16,14 +16,35 @@ const matchSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  duration: String,
-  highlights: {
-    type: String,
-    required: true,
-  },
   thoughts: {
     type: String,
     required: true,
+  },
+  // New fields:
+  stipulation: {
+    type: String, // For special match rules like "No DQ", "Steel Cage", etc.
+    default: "Regular Match",
+  },
+  matchOrder: {
+    type: Number, // To track match position on card (opener, main event, etc.)
+    required: true,
+  },
+  method: {
+    type: String, // How the match ended: "Pinfall", "Submission", "DQ", etc.
+    required: true,
+    enum: [
+      "Pinfall",
+      "Submission",
+      "DQ",
+      "Count Out",
+      "No Contest",
+      "Draw",
+      "Other",
+    ],
+  },
+  title: {
+    type: String, // If it was a title match, which title was on the line
+    default: null,
   },
 });
 

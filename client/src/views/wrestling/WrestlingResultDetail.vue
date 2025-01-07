@@ -1,4 +1,3 @@
-<!-- src/views/wrestling/WrestlingResultDetail.vue -->
 <template>
   <div v-if="loading" class="text-center py-12">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -37,45 +36,52 @@
           <p>{{ result.venue }}</p>
         </div>
 
-        <!-- Author Info -->
-        <div class="mt-4 flex items-center gap-4">
-          <img
-            :src="result.author?.photoURL || '/placeholder-user.png'"
-            :alt="result.author?.displayName"
-            class="w-12 h-12 rounded-full"
-          />
-          <div>
-            <p class="font-medium text-gray-900">{{ result.author?.displayName }}</p>
-            <p class="text-sm text-gray-500">Wrestling Journalist</p>
-          </div>
-        </div>
-
         <!-- Matches -->
         <div class="mt-8 space-y-8">
           <div
             v-for="(match, index) in result.matches"
             :key="index"
-            class="bg-gray-50 rounded-lg p-6 animate-slideUp"
+            class="bg-gray-50 rounded-lg p-6 animate-slideUp relative"
             :style="{ animationDelay: `${index * 150}ms` }"
           >
+            <!-- Championship Banner -->
+            <div
+              v-if="match.title"
+              class="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold"
+            >
+              {{ match.title }} Championship Match
+            </div>
+
             <div class="flex justify-between items-center mb-4">
-              <h3 class="text-xl font-semibold">{{ match.type }}</h3>
-              <span class="text-gray-600">{{ match.duration || 'N/A' }}</span>
+              <h3 class="text-xl font-semibold">
+                {{ match.type }}
+                <span
+                  v-if="match.stipulation && match.stipulation !== 'Regular Match'"
+                  class="text-sm text-gray-600 ml-2"
+                >
+                  ({{ match.stipulation }})
+                </span>
+              </h3>
+              <span class="text-gray-600">Match #{{ match.matchOrder }}</span>
             </div>
 
             <div class="space-y-4">
               <p class="text-lg">{{ match.wrestlers.join(' vs ') }}</p>
-              <p class="font-medium text-primary">Winner: {{ match.winner }}</p>
+
+              <div class="flex justify-between items-center">
+                <p class="font-medium text-primary">Winner: {{ match.winner }}</p>
+                <p class="text-gray-600">Method: {{ match.method }}</p>
+              </div>
 
               <!-- Highlights -->
               <div>
-                <h4 class="font-medium text-gray-900 mb-2">Highlights</h4>
+                <h4 class="font-medium text-gray-900 mb-2">Match Highlights</h4>
                 <p class="text-gray-700 whitespace-pre-line">{{ match.highlights }}</p>
               </div>
 
-              <!-- Analysis -->
+              <!-- Match Thoughts -->
               <div>
-                <h4 class="font-medium text-gray-900 mb-2">Analysis</h4>
+                <h4 class="font-medium text-gray-900 mb-2">Match Thoughts</h4>
                 <p class="text-gray-700">{{ match.thoughts }}</p>
               </div>
             </div>
@@ -105,8 +111,10 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { format } from 'date-fns'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
+const authStore = useAuthStore()
 const result = ref(null)
 const loading = ref(true)
 const error = ref(null)
@@ -118,7 +126,11 @@ const formatDate = (date) => {
 const fetchResult = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get(`/api/wrestling-results/slug/${route.params.slug}`)
+    const { data } = await axios.get(`/api/wrestling-results/slug/${route.params.slug}`, {
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    })
     result.value = data
   } catch (err) {
     console.error('Error fetching result:', err)

@@ -1,4 +1,3 @@
-// src/App.vue
 <template>
   <div class="min-h-screen bg-gray-50">
     <nav>
@@ -8,7 +7,9 @@
     <main class="flex-grow">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component :is="Component" />
+          <div :key="$route.path">
+            <component :is="Component" />
+          </div>
         </transition>
       </router-view>
     </main>
