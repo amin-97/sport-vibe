@@ -1,16 +1,70 @@
+// src/components/HeroSlideshow.vue
+<template>
+  <div class="relative overflow-hidden rounded-lg bg-gray-900">
+    <div class="relative h-64">
+      <transition-group name="fade" mode="out-in">
+        <div
+          v-for="(item, index) in newsItems"
+          :key="item.id"
+          v-show="index === currentNewsIndex"
+          class="absolute inset-0"
+        >
+          <img
+            :src="item.image"
+            :alt="item.title"
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
+            <div class="absolute bottom-0 left-0 p-4">
+              <h3 class="text-white font-semibold text-lg">{{ item.title }}</h3>
+              <p class="text-gray-200 text-sm mt-1">{{ item.excerpt }}</p>
+              <router-link
+                :to="item.link"
+                class="inline-flex items-center text-accent hover:text-accent/80 mt-2"
+              >
+                Read more
+                <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </transition-group>
+
+      <!-- Navigation Dots -->
+      <div class="absolute bottom-4 right-4 flex space-x-2">
+        <button
+          v-for="(_, index) in newsItems"
+          :key="index"
+          @click="currentNewsIndex = index"
+          class="w-2 h-2 rounded-full transition-colors"
+          :class="index === currentNewsIndex ? 'bg-accent' : 'bg-gray-400'"
+        >
+          <span class="sr-only">Slide {{ index + 1 }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 
-const activeTab = ref('news')
-const currentNewsIndex = ref(0)
-const currentResultIndex = ref(0)
 const newsItems = ref([])
-const loading = ref(false)
+const currentNewsIndex = ref(0)
+const loading = ref(true)
 const error = ref(null)
 
 // Fetch latest NBA news
-const fetchLatestNBANews = async () => {
+const fetchLatestNews = async () => {
   try {
     loading.value = true
     const { data } = await axios.get('/api/nba-news')
@@ -31,21 +85,13 @@ const fetchLatestNBANews = async () => {
   } catch (err) {
     console.error('Error fetching NBA news:', err)
     error.value = 'Failed to load news'
-    // Fallback to default news items if fetch fails
     newsItems.value = [
       {
         id: 1,
-        title: 'Lakers Make Blockbuster Trade',
-        excerpt: 'The Los Angeles Lakers have made a major move before the trade deadline...',
-        image: '/api/placeholder/400/200',
-        link: '/nba/news/1',
-      },
-      {
-        id: 2,
-        title: 'NBA All-Star Starters Revealed',
-        excerpt: "The NBA has announced the starting lineups for this year's All-Star game...",
-        image: '/api/placeholder/400/200',
-        link: '/nba/news/2',
+        title: 'Latest NBA Updates',
+        excerpt: 'Check back soon for the latest NBA news and updates...',
+        image: '/placeholder-image.png',
+        link: '/nba/news',
       },
     ]
   } finally {
@@ -53,46 +99,31 @@ const fetchLatestNBANews = async () => {
   }
 }
 
-const results = ref([
-  {
-    id: 1,
-    event: 'NBA Regular Season',
-    date: 'January 28, 2024',
-    venue: 'Crypto.com Arena',
-    mainEvent: 'Lakers vs Warriors',
-    winner: 'Lakers win 123-111',
-    link: '/nba/results/1',
-  },
-  {
-    id: 2,
-    event: 'NBA Regular Season',
-    date: 'February 1, 2024',
-    venue: 'Madison Square Garden',
-    mainEvent: 'Knicks vs Heat',
-    winner: 'Knicks win 115-109',
-    link: '/nba/results/2',
-  },
-])
-
-// Auto-advance slides
 let slideInterval
-
 const startSlideshow = () => {
   slideInterval = setInterval(() => {
-    if (activeTab.value === 'news') {
-      currentNewsIndex.value = (currentNewsIndex.value + 1) % newsItems.value.length
-    } else {
-      currentResultIndex.value = (currentResultIndex.value + 1) % results.value.length
-    }
-  }, 5000) // Change slide every 5 seconds
+    currentNewsIndex.value = (currentNewsIndex.value + 1) % newsItems.value.length
+  }, 5000)
 }
 
 onMounted(() => {
-  fetchLatestNBANews()
+  fetchLatestNews()
   startSlideshow()
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   clearInterval(slideInterval)
 })
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

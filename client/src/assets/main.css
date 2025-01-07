@@ -57,3 +57,59 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
 }
+
+/* Navigation Components */
+@layer components {
+  /* Desktop Navigation */
+  .desktop-underline {
+    @apply absolute left-0 bottom-0 w-full h-0.5 bg-orange-500 transform scale-x-0 transition-transform duration-300 ease-out origin-left group-hover:scale-x-100 mt-1;
+  }
+
+  .desktop-dropdown {
+    @apply absolute left-0 top-full min-w-[200px] rounded-md shadow-lg py-1 bg-primary ring-1 ring-black ring-opacity-5 transition-all duration-300 transform translate-y-1 z-10;
+  }
+
+  .dropdown-item {
+    @apply block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700;
+  }
+
+  /* Mobile Navigation */
+  .mobile-section {
+    @apply border-b border-gray-700 pb-2;
+  }
+
+  .mobile-section-button {
+    @apply w-full flex items-center justify-between text-base font-medium text-gray-300 hover:text-white py-2;
+  }
+
+  .mobile-section-content {
+    @apply mt-2 space-y-2 pl-4;
+  }
+
+  .mobile-link {
+    @apply block text-base text-gray-300 hover:text-white py-2;
+  }
+}
+
+/* Navigation Animations */
+@layer utilities {
+  .mobile-menu-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .mobile-menu-enter {
+    @apply opacity-0 -translate-y-2;
+  }
+
+  .mobile-menu-enter-active {
+    @apply opacity-100 translate-y-0;
+  }
+
+  .mobile-menu-leave {
+    @apply opacity-100 translate-y-0;
+  }
+
+  .mobile-menu-leave-active {
+    @apply opacity-0 -translate-y-2;
+  }
+}

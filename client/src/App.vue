@@ -1,54 +1,45 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <nav>
-      <HeaderComp />
-    </nav>
+    <Suspense>
+      <template #default>
+        <nav>
+          <LazyHeaderComp />
+        </nav>
+      </template>
+      <template #fallback>
+        <div class="h-16 bg-primary"></div>
+      </template>
+    </Suspense>
 
     <main class="flex-grow">
       <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <div :key="$route.path">
-            <component :is="Component" />
-          </div>
-        </transition>
+        <Suspense>
+          <template #default>
+            <transition name="fade" mode="out-in">
+              <component :is="Component" :key="$route.path" />
+            </transition>
+          </template>
+          <template #fallback>
+            <div class="loading-placeholder"></div>
+          </template>
+        </Suspense>
       </router-view>
     </main>
 
-    <FooterComp />
+    <Suspense>
+      <template #default>
+        <LazyFooterComp />
+      </template>
+      <template #fallback>
+        <div class="h-16 bg-gray-100"></div>
+      </template>
+    </Suspense>
   </div>
 </template>
 
 <script setup>
-import HeaderComp from './components/layout/HeaderComp.vue'
-import FooterComp from './components/layout/FooterComp.vue'
+import { defineAsyncComponent } from 'vue'
+
+const LazyHeaderComp = defineAsyncComponent(() => import('./components/layout/HeaderComp.vue'))
+const LazyFooterComp = defineAsyncComponent(() => import('./components/layout/FooterComp.vue'))
 </script>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* Base styles */
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1;
-}
-</style>
