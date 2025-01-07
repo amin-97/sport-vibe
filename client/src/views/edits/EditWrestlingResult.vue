@@ -362,16 +362,12 @@ const saveChanges = async () => {
       })
     }
 
-    const { data } = await api.put(
-      `http://localhost:5000/api/wrestling-results/slug/${result.value.slug}`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
+    const { data } = await api.put(`/api/wrestling-results/slug/${result.value.slug}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
       },
-    )
+    })
 
     // Show success toast
     toast.success('Wrestling result updated successfully', {

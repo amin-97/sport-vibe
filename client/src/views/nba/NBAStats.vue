@@ -94,7 +94,7 @@ const fetchAllPlayers = async () => {
     loading.value = true
     error.value = null
 
-    const response = await api.get('http://localhost:5000/api/stats/players', {
+    const response = await api.get('/api/stats/players', {
       params: {
         limit: 1000,
       },
