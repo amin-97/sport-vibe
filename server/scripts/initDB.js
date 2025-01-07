@@ -10,9 +10,7 @@ const initializeDatabase = async () => {
   try {
     // Import data from Excel files stored in a 'data' directory
     const dataDir = path.join(__dirname, "../data");
-    await importPlayerStats(
-      path.join(dataDir, "active_player_career_stats.xlsx")
-    );
+    await importPlayerStats(path.join(dataDir, "ActivePlayerCareerStats.xlsx"));
     await importTeams(path.join(dataDir, "Teams.xlsx"));
     await importTeamDetails(path.join(dataDir, "TeamDetails.xlsx"));
     await importCommonTeamRoster(path.join(dataDir, "CommonTeamRoster.xlsx"));
