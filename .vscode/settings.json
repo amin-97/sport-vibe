@@ -11,17 +11,20 @@
     "firebasestorage",
     "GENERALMANAGER",
     "HEADCOACH",
+    "headlessui",
     "heroicons",
     "Knicks",
     "lucide",
     "maxlength",
     "OREB",
     "Orton",
+    "oxlint",
     "Pinfall",
     "sportvibe",
     "superkick",
     "tiptap",
     "VITE",
+    "vueuse",
     "YEARFOUNDED"
   ]
 }

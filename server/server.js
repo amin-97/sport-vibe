@@ -129,8 +129,17 @@ if (process.env.NODE_ENV === "production") {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
+  res.status(500).json({
+    message: "Something went wrong!",
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+  });
 });
+
+// Error handling middleware
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ message: "Something went wrong!" });
+// });
 
 // Start server
 const PORT = process.env.PORT || 5000;

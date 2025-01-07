@@ -9,7 +9,8 @@
     "import-stats": "node scripts/importPlayerStats.js",
     "import-teams": "node scripts/importTeams.js",
     "import-details": "node scripts/importTeamDetails.js",
-    "import-roster": "node scripts/importRosters.js"
+    "import-roster": "node scripts/importRosters.js",
+    "build": "echo 'No build required for server'"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.721.0",
