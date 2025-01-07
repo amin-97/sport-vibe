@@ -81,7 +81,7 @@ const importData = async (data) => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("Connected to MongoDB");
+    //console.log("Connected to MongoDB");
 
     // Clear existing data if needed
     // await ActivePlayerCareerStats.deleteMany({});
@@ -91,11 +91,11 @@ const importData = async (data) => {
     const result = await ActivePlayerCareerStats.insertMany(data, {
       ordered: false, // Continue inserting even if some documents fail
     });
-    console.log(`Successfully imported ${result.length} records`);
+    //console.log(`Successfully imported ${result.length} records`);
 
     // Log any potential issues with the data
     const uniquePlayerCount = new Set(data.map((row) => row.PLAYER_ID)).size;
-    console.log(`Number of unique players: ${uniquePlayerCount}`);
+    //console.log(`Number of unique players: ${uniquePlayerCount}`);
 
     return result;
   } catch (error) {
@@ -103,7 +103,7 @@ const importData = async (data) => {
     throw error;
   } finally {
     await mongoose.disconnect();
-    console.log("Disconnected from MongoDB");
+    //console.log("Disconnected from MongoDB");
   }
 };
 
@@ -112,18 +112,18 @@ const main = async () => {
   try {
     // Update this path to your Excel file location
     const filePath = process.argv[2] || "./active_player_career_stats.xlsx";
-    console.log("Reading file from:", filePath);
+    //console.log("Reading file from:", filePath);
 
     const rawData = readExcelFile(filePath);
-    console.log(`Read ${rawData.length} rows from Excel`);
+    //console.log(`Read ${rawData.length} rows from Excel`);
 
     const cleanedData = cleanData(rawData);
-    console.log("Data cleaned and formatted");
+    //console.log("Data cleaned and formatted");
 
     await importData(cleanedData);
-    console.log("Import completed successfully");
+    //console.log("Import completed successfully");
   } catch (error) {
-    console.error("Import failed:", error);
+    //console.error("Import failed:", error);
     process.exit(1);
   }
 };

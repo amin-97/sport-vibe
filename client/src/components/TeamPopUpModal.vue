@@ -164,7 +164,7 @@ const fetchTeamDetails = async () => {
     loading.value = true
 
     // Log the team object to see its structure
-    console.log('Team object:', props.team)
+    // console.log('Team object:', props.team)
 
     // Debugging: try multiple methods to fetch team details
     let response
@@ -181,7 +181,7 @@ const fetchTeamDetails = async () => {
           break
         }
       } catch (searchErr) {
-        console.log(`Search with ${query} failed:`, searchErr)
+        // console.log(`Search with ${query} failed:`, searchErr)
       }
     }
 

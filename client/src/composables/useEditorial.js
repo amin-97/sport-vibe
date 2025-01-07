@@ -72,7 +72,7 @@ export function useEditorial(type = 'wrestling') {
         status: status,
         readingTime: editorialData.value.readingTime,
       }
-      console.log('Autosaving with data:', debugData)
+      // console.log('Autosaving with data:', debugData)
 
       // Append all fields
       Object.keys(editorialData.value).forEach((key) => {

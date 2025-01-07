@@ -452,7 +452,7 @@ const handleSubmit = async () => {
     isSubmitting.value = true
     const formDataToSubmit = prepareFormData()
 
-    console.log('Token being used:', authStore.token) // Debug log
+    // console.log('Token being used:', authStore.token) // Debug log
 
     const response = await api.post('/api/wrestling-results', formDataToSubmit, {
       headers: {
@@ -460,7 +460,7 @@ const handleSubmit = async () => {
         Authorization: `Bearer ${authStore.token}`,
       },
     })
-    console.log('Success:', response.data)
+    // console.log('Success:', response.data)
     router.push(`/wrestling/results/`)
   } catch (error) {
     console.error('Submission Error:', error)

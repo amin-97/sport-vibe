@@ -218,11 +218,11 @@ const getDetailRoute = (item) => {
 async function fetchItems() {
   try {
     loading.value = true
-    console.log('Current tab:', currentTab.value)
-    console.log('Fetching from endpoint:', apiEndpoints[currentTab.value])
+    // console.log('Current tab:', currentTab.value)
+    // console.log('Fetching from endpoint:', apiEndpoints[currentTab.value])
 
     const { data } = await api.get(apiEndpoints[currentTab.value])
-    console.log('Received data:', data)
+    // console.log('Received data:', data)
 
     items.value = data
   } catch (err) {

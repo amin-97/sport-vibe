@@ -317,7 +317,7 @@ const handlePublish = async () => {
       baseURL: 'http://localhost:5000',
     })
 
-    console.log('Editorial published:', response.data)
+    // console.log('Editorial published:', response.data)
 
     if (response.data._id) {
       router.push(`/${props.type}/editorials/`)

@@ -121,7 +121,7 @@ const teamDetailsController = {
   searchTeamDetails: async (req, res) => {
     try {
       const { query } = req.query;
-      console.log("Search Query Received:", query); // Add this logging
+      // console.log("Search Query Received:", query); // Add this logging
 
       const teamDetails = await TeamDetails.find({
         $or: [
@@ -132,10 +132,10 @@ const teamDetailsController = {
         ],
       }).limit(10);
 
-      console.log("Search Results:", teamDetails); // Add this logging
+      // console.log("Search Results:", teamDetails); // Add this logging
 
       if (teamDetails.length === 0) {
-        console.log(`No team found for query: ${query}`); // Add this logging
+        // console.log(`No team found for query: ${query}`); // Add this logging
         return res.status(404).json({ message: "No team details found" });
       }
 

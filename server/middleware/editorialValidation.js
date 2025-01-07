@@ -175,7 +175,7 @@ const validateWrestlingEditorial = [
     .withMessage("Status must be either 'draft' or 'published'"),
 
   (req, res, next) => {
-    console.log("Validation body:", req.body); // Add this for debugging
+    //console.log("Validation body:", req.body); // Add this for debugging
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

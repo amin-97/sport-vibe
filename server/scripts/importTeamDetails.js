@@ -55,7 +55,7 @@ const importData = async (data) => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("Connected to MongoDB");
+    //console.log("Connected to MongoDB");
 
     // Optional: Validate data before import
     const validationErrors = data.filter((team) => {
@@ -69,48 +69,48 @@ const importData = async (data) => {
     }
 
     await TeamDetails.deleteMany({});
-    console.log("Cleared existing data");
+    //console.log("Cleared existing data");
 
     const result = await TeamDetails.insertMany(data, {
       ordered: false,
     });
-    console.log(`Successfully imported ${result.length} records`);
+    //console.log(`Successfully imported ${result.length} records`);
 
     const uniqueTeamCount = new Set(data.map((row) => row.TEAM_ID)).size;
-    console.log(`Number of unique team details: ${uniqueTeamCount}`);
+    //console.log(`Number of unique team details: ${uniqueTeamCount}`);
 
     return result;
   } catch (error) {
-    console.error("Error importing data:", error);
+    //console.error("Error importing data:", error);
     throw error;
   } finally {
     await mongoose.disconnect();
-    console.log("Disconnected from MongoDB");
+    //console.log("Disconnected from MongoDB");
   }
 };
 
 const main = async () => {
   try {
     const filePath = process.argv[2] || "./TeamDetails.xlsx";
-    console.log("Reading file from:", filePath);
+    //console.log("Reading file from:", filePath);
 
     const rawData = readExcelFile(filePath);
-    console.log(`Read ${rawData.length} rows from Excel`);
+    //console.log(`Read ${rawData.length} rows from Excel`);
 
     const cleanedData = cleanData(rawData);
-    console.log("Data cleaned and formatted");
+    //console.log("Data cleaned and formatted");
 
     // Log first few entries to verify
-    console.log(
-      "First 3 entries:",
-      JSON.stringify(cleanedData.slice(0, 3), null, 2)
-    );
+    // console.log(
+    //   "First 3 entries:",
+    //   JSON.stringify(cleanedData.slice(0, 3), null, 2)
+    // );
 
     await importData(cleanedData);
-    console.log("Import completed successfully");
+    //console.log("Import completed successfully");
   } catch (error) {
-    console.error("Import failed:", error);
-    console.error("Error details:", error.stack);
+    //console.error("Import failed:", error);
+    //console.error("Error details:", error.stack);
     process.exit(1);
   }
 };

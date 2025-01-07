@@ -318,7 +318,7 @@ router.get("/players/:playerName", async (req, res) => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
 
-    console.log("Searching for player name:", playerName);
+    //console.log("Searching for player name:", playerName);
 
     // Use more flexible search strategies
     const playerStats = await ActivePlayerCareerStats.find({
@@ -363,7 +363,7 @@ router.get("/players/name/:playerName", async (req, res) => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
 
-    console.log("Searching for player name:", playerName);
+    //console.log("Searching for player name:", //playerName);
 
     // Find the player(s) matching the name
     const players = await ActivePlayerCareerStats.find({

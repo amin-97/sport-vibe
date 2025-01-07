@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken"); // Add this
 
 router.post("/google", async (req, res) => {
   try {
-    console.log("Received auth request:", req.body);
+    // console.log("Received auth request:", req.body);
 
     const { googleId, email, displayName, photoURL } = req.body;
 
@@ -25,11 +25,11 @@ router.post("/google", async (req, res) => {
         photoURL,
       });
       await user.save();
-      console.log("New user created:", user);
+      // console.log("New user created:", user);
     } else {
       user.lastLogin = new Date();
       await user.save();
-      console.log("Existing user updated:", user);
+      // console.log("Existing user updated:", user);
     }
 
     // Generate JWT token

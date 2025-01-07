@@ -233,16 +233,16 @@ const wrestlingNewsController = new NewsController(WrestlingNews, "wrestling");
 const nbaNewsController = new NewsController(NBANews, "nba");
 
 // Test that controllers were created properly
-console.log("Controllers initialized:", {
-  wrestlingNews: {
-    type: wrestlingNewsController.type,
-    methodsAvailable: Object.keys(wrestlingNewsController),
-  },
-  nbaNews: {
-    type: nbaNewsController.type,
-    methodsAvailable: Object.keys(nbaNewsController),
-  },
-});
+// console.log("Controllers initialized:", {
+//   wrestlingNews: {
+//     type: wrestlingNewsController.type,
+//     methodsAvailable: Object.keys(wrestlingNewsController),
+//   },
+//   nbaNews: {
+//     type: nbaNewsController.type,
+//     methodsAvailable: Object.keys(nbaNewsController),
+//   },
+// });
 
 module.exports = {
   wrestlingNewsController,
