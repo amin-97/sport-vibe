@@ -109,7 +109,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 import { useAuthStore } from '@/stores/auth'
 
@@ -126,7 +126,7 @@ const formatDate = (date) => {
 const fetchResult = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get(`/api/wrestling-results/slug/${route.params.slug}`, {
+    const { data } = await api.get(`/api/wrestling-results/slug/${route.params.slug}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`,
       },

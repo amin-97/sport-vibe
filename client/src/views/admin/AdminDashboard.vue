@@ -147,7 +147,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
-import axios from 'axios'
+import api from '@/utils/axios'
 
 const router = useRouter()
 
@@ -221,7 +221,7 @@ async function fetchItems() {
     console.log('Current tab:', currentTab.value)
     console.log('Fetching from endpoint:', apiEndpoints[currentTab.value])
 
-    const { data } = await axios.get(apiEndpoints[currentTab.value])
+    const { data } = await api.get(apiEndpoints[currentTab.value])
     console.log('Received data:', data)
 
     items.value = data
@@ -248,7 +248,7 @@ const handleDelete = async (item) => {
   if (!confirm('Are you sure you want to delete this item?')) return
 
   try {
-    await axios.delete(`${apiEndpoints[currentTab.value]}/slug/${item.slug}`)
+    await api.delete(`${apiEndpoints[currentTab.value]}/slug/${item.slug}`)
     items.value = items.value.filter((i) => i.slug !== item.slug)
   } catch (err) {
     console.error('Error deleting item:', err)
@@ -259,17 +259,6 @@ const handleDelete = async (item) => {
     }
   }
 }
-// const handleDelete = async (item) => {
-//   if (!confirm('Are you sure you want to delete this item?')) return
-
-//   try {
-//     await axios.delete(`${apiEndpoints[currentTab.value]}/${item._id}`)
-//     items.value = items.value.filter((i) => i._id !== item._id)
-//   } catch (err) {
-//     console.error('Error deleting item:', err)
-//     alert('Failed to delete item')
-//   }
-// }
 
 watch(currentTab, fetchItems)
 

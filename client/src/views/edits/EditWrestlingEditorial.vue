@@ -140,7 +140,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { useToast } from 'vue-toast-notification'
 
 const route = useRoute()
@@ -164,7 +164,7 @@ const editorialData = ref({
 
 const fetchEditorial = async () => {
   try {
-    const { data } = await axios.get(`/api/wrestling-editorials/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/wrestling-editorials/slug/${route.params.slug}`)
     editorialData.value = {
       ...data,
       image: data.image || null,
@@ -239,7 +239,7 @@ const handleSubmit = async () => {
     }
 
     const token = localStorage.getItem('token')
-    const response = await axios.put(
+    const response = await api.put(
       `/api/wrestling-editorials/slug/${route.params.slug}`,
       formData,
       {

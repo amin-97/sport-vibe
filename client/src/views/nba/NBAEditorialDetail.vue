@@ -109,7 +109,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const route = useRoute()
@@ -124,7 +124,7 @@ const formatDate = (date) => {
 const fetchEditorial = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get(`/api/nba-editorials/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/nba-editorials/slug/${route.params.slug}`)
     editorial.value = data
   } catch (err) {
     console.error('Error fetching editorial:', err)

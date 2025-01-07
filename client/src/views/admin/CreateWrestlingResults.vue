@@ -339,7 +339,7 @@
 
 <script setup>
 import { ref, onBeforeUnmount } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -454,7 +454,7 @@ const handleSubmit = async () => {
 
     console.log('Token being used:', authStore.token) // Debug log
 
-    const response = await axios.post('/api/wrestling-results', formDataToSubmit, {
+    const response = await api.post('/api/wrestling-results', formDataToSubmit, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${authStore.token}`,

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const editorials = ref([])
@@ -35,7 +35,7 @@ const filteredEditorials = computed(() => {
 const fetchEditorials = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('/api/wrestling-editorials')
+    const { data } = await api.get('/api/wrestling-editorials')
     editorials.value = data
   } catch (err) {
     error.value = 'Failed to fetch editorials'

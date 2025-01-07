@@ -118,7 +118,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { useToast } from 'vue-toast-notification'
 
 const route = useRoute()
@@ -142,7 +142,7 @@ const newsData = ref({
 
 const fetchNews = async () => {
   try {
-    const { data } = await axios.get(`/api/wrestling-news/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/wrestling-news/slug/${route.params.slug}`)
     newsData.value = {
       ...data,
       image: data.image || null,
@@ -202,7 +202,7 @@ const handleSubmit = async () => {
     }
 
     const token = localStorage.getItem('token')
-    const response = await axios.put(`/api/wrestling-news/slug/${route.params.slug}`, formData, {
+    const response = await api.put(`/api/wrestling-news/slug/${route.params.slug}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,

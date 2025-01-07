@@ -140,7 +140,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
-import axios from 'axios'
+import api from '@/utils/api'
 
 // Register ChartJS components
 ChartJS.register(
@@ -323,7 +323,7 @@ const downloadCSV = () => {
 // Fetch player stats
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/stats/players/name/${route.params.playerName}`)
+    const response = await api.get(`/api/stats/players/name/${route.params.playerName}`)
     playerData.value = response.data
 
     // Sort season stats by season ID if it's an array

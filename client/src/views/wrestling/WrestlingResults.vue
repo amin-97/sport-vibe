@@ -101,7 +101,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const results = ref([])
@@ -122,7 +122,7 @@ const fetchResults = async () => {
   try {
     loading.value = true
     error.value = null
-    const { data } = await axios.get('/api/wrestling-results')
+    const { data } = await api.get('/api/wrestling-results')
     results.value = data.sort((a, b) => new Date(b.date) - new Date(a.date))
   } catch (err) {
     console.error('Error fetching results:', err)

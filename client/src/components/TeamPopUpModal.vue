@@ -134,6 +134,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import axios from 'axios'
+import api from '@/utils/axios'
 
 // Props
 const props = defineProps({
@@ -172,7 +173,7 @@ const fetchTeamDetails = async () => {
     for (const query of searchQueries) {
       try {
         // Try searching via multiple possible routes
-        response = await axios.get(`/api/team-details/search/query?query=${query}`)
+        const response = await api.get(`/api/team-details/search/query?query=${query}`)
 
         // If search returns results, take the first one
         if (response.data && response.data.length > 0) {
@@ -206,7 +207,7 @@ const fetchTeamDetails = async () => {
 const fetchTeamRoster = async () => {
   try {
     loading.value = true
-    const response = await axios.get(`/api/common-team-roster?teamId=${props.team.id}&season=2024`)
+    const response = await api.get(`/api/common-team-roster?teamId=${props.team.id}&season=2024`)
     teamRoster.value = response.data.rosterEntries || []
   } catch (err) {
     error.value = 'Failed to load team roster'

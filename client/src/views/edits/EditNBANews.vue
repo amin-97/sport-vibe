@@ -175,7 +175,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import EditorForm from '@/components/EditorForm.vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { useToast } from 'vue-toast-notification'
 
 const route = useRoute()
@@ -203,7 +203,7 @@ const articleData = ref({
 
 const fetchArticle = async () => {
   try {
-    const { data } = await axios.get(`/api/nba-news/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/nba-news/slug/${route.params.slug}`)
     articleData.value = {
       ...data,
       image: data.image || null,
@@ -289,7 +289,7 @@ const handleSubmit = async () => {
     }
 
     const token = localStorage.getItem('token')
-    const response = await axios.put(`/api/nba-news/slug/${route.params.slug}`, formData, {
+    const response = await api.put(`/api/nba-news/slug/${route.params.slug}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,

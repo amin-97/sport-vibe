@@ -101,7 +101,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const route = useRoute()
@@ -123,7 +123,7 @@ const fetchEditorial = async () => {
       throw new Error('No slug provided')
     }
 
-    const { data } = await axios.get(`/api/wrestling-editorials/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/wrestling-editorials/slug/${route.params.slug}`)
     editorial.value = data
     console.log('Fetched editorial:', data)
   } catch (err) {

@@ -104,7 +104,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const route = useRoute()
@@ -122,7 +122,7 @@ const formatDate = (date) => {
 const fetchNews = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get(`/api/wrestling-news/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/wrestling-news/slug/${route.params.slug}`)
     news.value = data
   } catch (err) {
     console.error('Error fetching news:', err)

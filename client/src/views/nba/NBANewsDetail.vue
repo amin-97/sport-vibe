@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const route = useRoute()
@@ -21,7 +21,7 @@ const formatDate = (date) => {
 const fetchArticle = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get(`/api/nba-news/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/nba-news/slug/${route.params.slug}`)
     article.value = data
   } catch (err) {
     console.error('Error fetching article:', err)
@@ -41,7 +41,7 @@ const handleDelete = () => {
 
 const confirmDelete = async () => {
   try {
-    await axios.delete(`/api/nba/articles/${article.value._id}`)
+    await api.delete(`/api/nba/articles/${article.value._id}`)
     router.push('/nba/news')
   } catch (err) {
     console.error('Error deleting article:', err)

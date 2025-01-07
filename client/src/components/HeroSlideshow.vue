@@ -13,7 +13,7 @@ const error = ref(null)
 const fetchLatestNBANews = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('http://localhost:5000/api/nba-news')
+    const { data } = await axios.get('/api/nba-news')
 
     // Sort by most recent and take top 4
     const sortedNews = data

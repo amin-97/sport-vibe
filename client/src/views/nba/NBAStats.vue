@@ -1,8 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
-
+import api from '@/utils/axios'
 // Router
 const router = useRouter()
 
@@ -95,7 +94,7 @@ const fetchAllPlayers = async () => {
     loading.value = true
     error.value = null
 
-    const response = await axios.get('http://localhost:5000/api/stats/players', {
+    const response = await api.get('http://localhost:5000/api/stats/players', {
       params: {
         limit: 1000,
       },

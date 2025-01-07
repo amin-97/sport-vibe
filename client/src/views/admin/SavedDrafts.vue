@@ -142,7 +142,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
-import axios from 'axios'
+import api from '@/utils/axios'
 
 const router = useRouter()
 
@@ -209,7 +209,7 @@ const apiEndpoints = {
 async function fetchItems() {
   try {
     loading.value = true
-    const { data } = await axios.get(`${apiEndpoints[currentTab.value]}?status=draft`)
+    const { data } = await api.get(`${apiEndpoints[currentTab.value]}?status=draft`)
     items.value = data
   } catch (err) {
     console.error('Error fetching drafts:', err.response?.data || err)
@@ -234,7 +234,7 @@ const handleDelete = async (item) => {
   if (!confirm('Are you sure you want to delete this draft?')) return
 
   try {
-    await axios.delete(`${apiEndpoints[currentTab.value]}/${item._id}`)
+    await api.delete(`${apiEndpoints[currentTab.value]}/${item._id}`)
     items.value = items.value.filter((i) => i._id !== item._id)
   } catch (err) {
     console.error('Error deleting draft:', err)

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const news = ref([])
@@ -20,7 +20,7 @@ const formatDate = (date) => {
 const fetchNews = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('/api/wrestling-news')
+    const { data } = await api.get('/api/wrestling-news')
     // Filter for only wrestling news (wwe and aew categories)
     news.value = data.filter((item) => ['wwe', 'aew'].includes(item.category))
   } catch (err) {

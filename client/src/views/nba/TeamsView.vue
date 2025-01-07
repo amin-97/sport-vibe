@@ -50,7 +50,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import TeamPopUpModal from '@/components/TeamPopUpModal.vue'
 
 // Reactive state
@@ -65,7 +65,7 @@ const selectedTeam = ref(null)
 // Fetch all teams on component mount
 onMounted(async () => {
   try {
-    const teamsResponse = await axios.get('/api/teams')
+    const teamsResponse = await api.get('/api/teams')
     teams.value = teamsResponse.data.teams
     loading.value = false
   } catch (err) {

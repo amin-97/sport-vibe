@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 
 const news = ref([])
@@ -53,7 +53,7 @@ const formatDate = (date) => {
 const fetchArticles = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get('/api/nba-news')
+    const { data } = await api.get('/api/nba-news')
     news.value = data
   } catch (err) {
     console.error('Error fetching news:', err)

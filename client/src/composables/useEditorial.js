@@ -99,7 +99,6 @@ export function useEditorial(type = 'wrestling') {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
-        baseURL: 'http://localhost:5000/api',
       })
 
       // Rest of the method remains the same

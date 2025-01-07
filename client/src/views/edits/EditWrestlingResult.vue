@@ -229,7 +229,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { format } from 'date-fns'
 import MatchEditModal from './MatchEditModal.vue'
 import { useToast } from 'vue-toast-notification'
@@ -260,7 +260,7 @@ const formattedDate = computed({
 const fetchResult = async () => {
   try {
     loading.value = true
-    const { data } = await axios.get(`/api/wrestling-results/slug/${route.params.slug}`)
+    const { data } = await api.get(`/api/wrestling-results/slug/${route.params.slug}`)
 
     // Ensure wrestlers are always arrays
     data.matches = data.matches.map((match) => ({
@@ -362,7 +362,7 @@ const saveChanges = async () => {
       })
     }
 
-    const { data } = await axios.put(
+    const { data } = await api.put(
       `http://localhost:5000/api/wrestling-results/slug/${result.value.slug}`,
       formData,
       {

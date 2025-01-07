@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { auth, googleProvider } from '@/config/firebase'
 import { signInWithPopup } from 'firebase/auth'
 import axios from 'axios'
+import api from '@/utils/axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -23,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
         const result = await signInWithPopup(auth, googleProvider)
 
         // Send user data to backend
-        const { data } = await axios.post('/api/auth/google', {
+        const { data } = await api.post('/api/auth/google', {
           googleId: result.user.uid,
           email: result.user.email,
           displayName: result.user.displayName,
