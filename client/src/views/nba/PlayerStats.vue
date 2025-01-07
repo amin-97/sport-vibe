@@ -140,7 +140,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
-import api from '@/utils/api'
+import api from '@/utils/axios'
 
 // Register ChartJS components
 ChartJS.register(
