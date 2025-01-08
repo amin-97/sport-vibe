@@ -1,5 +1,9 @@
+<!-- //src/App.vue -->
 <template>
   <div class="min-h-screen bg-gray-50">
+    <!-- Loading Overlay -->
+    <LoadingOverlay />
+
     <Suspense>
       <template #default>
         <nav>
@@ -39,6 +43,7 @@
 
 <script setup>
 import { defineAsyncComponent } from 'vue'
+import LoadingOverlay from './shared/LoadingOverlay.vue'
 
 const LazyHeaderComp = defineAsyncComponent(() => import('./components/layout/HeaderComp.vue'))
 const LazyFooterComp = defineAsyncComponent(() => import('./components/layout/FooterComp.vue'))

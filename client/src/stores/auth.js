@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', {
     token: null,
     loading: true,
     error: null,
+    signOutLoading: false,
   }),
 
   getters: {
@@ -48,14 +49,25 @@ export const useAuthStore = defineStore('auth', {
 
     async signOut() {
       try {
+        this.signOutLoading = true
         await auth.signOut()
+
+        // Wait for 2 seconds
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+
+        // Clear auth state
         this.user = null
         this.token = null
         delete axios.defaults.headers.common['Authorization']
         localStorage.removeItem('token')
         localStorage.removeItem('user')
+
+        return true // Return success status
       } catch (error) {
         console.error('Sign out error:', error)
+        return false // Return failure status
+      } finally {
+        this.signOutLoading = false
       }
     },
 

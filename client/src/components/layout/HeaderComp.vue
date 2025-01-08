@@ -1,3 +1,109 @@
+// components/layout/HeaderComp.vue
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/config/firebase'
+import { useRouter } from 'vue-router'
+import { debounce } from '@/utils/performance'
+import NavDropdown from './NavDropdown.vue'
+import MobileMenu from './MobileMenu.vue'
+import AuthSection from './AuthSection.vue'
+
+const router = useRouter()
+const authStore = useAuthStore()
+const isDesktop = ref(window.innerWidth >= 768)
+const isMobileMenuOpen = ref(false)
+const activeDropdown = ref(null)
+const activeSection = ref(null)
+
+// Menu Items
+const writeMenuItems = [
+  { text: 'Write Wrestling Results', to: '/admin/write/results' },
+  { text: 'Write Wrestling News', to: '/admin/write/news' },
+  { text: 'Write Wrestling Editorial', to: '/admin/write/editorial' },
+  { text: 'Write NBA Editorial', to: '/admin/write/nba/editorial' },
+  { text: 'Write NBA News', to: '/admin/write/nba/news' },
+]
+
+const adminMenuItems = [{ text: 'Dashboard', to: '/admin/dashboard' }]
+
+const nbaMenuItems = [
+  { text: 'News', to: '/nba/news' },
+  { text: 'Editorials', to: '/nba/editorials' },
+  { text: 'Player Stats', to: '/nba-stats' },
+  { text: 'Team Rosters', to: '/nba/teams' },
+]
+
+const wrestlingMenuItems = [
+  { text: 'News', to: '/wrestling/news' },
+  { text: 'Results', to: '/wrestling/results' },
+  { text: 'Editorials', to: '/wrestling/editorials' },
+]
+
+const allMenuItems = computed(() => ({
+  write: writeMenuItems,
+  admin: adminMenuItems,
+  nba: nbaMenuItems,
+  wrestling: wrestlingMenuItems,
+}))
+
+const handleDropdownShow = debounce((dropdownName) => {
+  activeDropdown.value = dropdownName
+}, 100)
+
+const handleDropdownHide = debounce(() => {
+  activeDropdown.value = null
+}, 150)
+
+const handleSectionToggle = (sectionName) => {
+  activeSection.value = activeSection.value === sectionName ? null : sectionName
+}
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
+  activeSection.value = null
+}
+
+const handleSignOut = async () => {
+  try {
+    authStore.signOutLoading = true
+    await signOut(auth)
+    await authStore.signOut()
+    activeDropdown.value = null
+    closeMobileMenu()
+
+    // Wait for animation
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    router.push('/')
+  } catch (error) {
+    console.error('Error signing out:', error)
+  } finally {
+    authStore.signOutLoading = false
+  }
+}
+
+const handleResize = debounce(() => {
+  isDesktop.value = window.innerWidth >= 768
+  if (isDesktop.value) {
+    closeMobileMenu()
+  }
+}, 250)
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+</script>
+
 <template>
   <header class="bg-primary shadow-lg relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,99 +196,3 @@
     />
   </header>
 </template>
-<script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { signOut } from 'firebase/auth'
-import { auth } from '@/config/firebase'
-import { debounce } from '@/utils/performance'
-import NavDropdown from './NavDropdown.vue'
-import MobileMenu from './MobileMenu.vue'
-import AuthSection from './AuthSection.vue'
-
-const authStore = useAuthStore()
-const isDesktop = ref(window.innerWidth >= 768)
-const isMobileMenuOpen = ref(false)
-const activeDropdown = ref(null)
-const activeSection = ref(null)
-
-// Menu Items
-const writeMenuItems = [
-  { text: 'Write Wrestling Results', to: '/admin/write/results' },
-  { text: 'Write Wrestling News', to: '/admin/write/news' },
-  { text: 'Write Wrestling Editorial', to: '/admin/write/editorial' },
-  { text: 'Write NBA Editorial', to: '/admin/write/nba/editorial' },
-  { text: 'Write NBA News', to: '/admin/write/nba/news' },
-]
-
-const adminMenuItems = [{ text: 'Dashboard', to: '/admin/dashboard' }]
-
-const nbaMenuItems = [
-  { text: 'News', to: '/nba/news' },
-  { text: 'Editorials', to: '/nba/editorials' },
-  { text: 'Player Stats', to: '/nba-stats' },
-  { text: 'Team Rosters', to: '/nba/teams' },
-]
-
-const wrestlingMenuItems = [
-  { text: 'News', to: '/wrestling/news' },
-  { text: 'Results', to: '/wrestling/results' },
-  { text: 'Editorials', to: '/wrestling/editorials' },
-]
-
-const allMenuItems = computed(() => ({
-  write: writeMenuItems,
-  admin: adminMenuItems,
-  nba: nbaMenuItems,
-  wrestling: wrestlingMenuItems,
-}))
-
-// Event Handlers
-const handleDropdownShow = debounce((dropdownName) => {
-  activeDropdown.value = dropdownName
-}, 100)
-
-const handleDropdownHide = debounce(() => {
-  activeDropdown.value = null
-}, 150)
-
-const handleSectionToggle = (sectionName) => {
-  activeSection.value = activeSection.value === sectionName ? null : sectionName
-}
-
-const toggleMobileMenu = () => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value
-}
-
-const closeMobileMenu = () => {
-  isMobileMenuOpen.value = false
-  activeSection.value = null
-}
-
-const handleSignOut = async () => {
-  try {
-    await signOut(auth)
-    await authStore.signOut()
-    activeDropdown.value = null
-    closeMobileMenu()
-  } catch (error) {
-    console.error('Error signing out:', error)
-  }
-}
-
-// Responsive handling
-const handleResize = debounce(() => {
-  isDesktop.value = window.innerWidth >= 768
-  if (isDesktop.value) {
-    closeMobileMenu()
-  }
-}, 250)
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-})
-</script>

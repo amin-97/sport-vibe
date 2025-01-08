@@ -1,4 +1,4 @@
-//components/layout/NavDropdown.vue
+<!-- //components/layout/NavDropdown.vue -->
 <script setup>
 import { ref, onBeforeUnmount } from 'vue'
 
