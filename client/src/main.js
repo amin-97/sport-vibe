@@ -4,6 +4,7 @@ import router from './router'
 import axios from 'axios'
 import ToastPlugin from 'vue-toast-notification'
 import App from './App.vue'
+import { useAuthStore } from './stores/auth'
 import './assets/main.css'
 import 'vue-toast-notification/dist/theme-sugar.css'
 
@@ -33,12 +34,20 @@ const setupAxios = () => {
   })
 }
 
-setupAxios()
-const app = createApp(App)
-const pinia = createPinia()
+async function initializeApp() {
+  setupAxios()
+  const app = createApp(App)
+  const pinia = createPinia()
 
-app.use(pinia)
-app.use(router)
-app.use(ToastPlugin)
+  app.use(pinia)
+  app.use(router)
+  app.use(ToastPlugin)
 
-app.mount('#app')
+  // Initialize auth before mounting
+  const authStore = useAuthStore()
+  await authStore.initializeAuth()
+
+  app.mount('#app')
+}
+
+initializeApp()

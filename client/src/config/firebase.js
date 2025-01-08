@@ -1,6 +1,6 @@
 // src/config/firebase.js
 import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,9 +11,12 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
+
+// Set persistence to LOCAL
+setPersistence(auth, browserLocalPersistence)
+
 const googleProvider = new GoogleAuthProvider()
 
 export { auth, googleProvider }

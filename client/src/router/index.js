@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { watch } from 'vue'
 
 const routes = [
   {
@@ -172,12 +173,30 @@ const router = createRouter({
 })
 
 // Navigation guard for admin routes
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
+  // Wait for auth to initialize if it's loading
+  if (authStore.loading) {
+    await new Promise((resolve) => {
+      const unwatch = watch(
+        () => authStore.loading,
+        (loading) => {
+          if (!loading) {
+            unwatch()
+            resolve()
+          }
+        },
+      )
+    })
+  }
+
+  // Check admin access
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    // Redirect to home if trying to access admin route without admin privileges
     next({ name: 'home' })
   } else {
+    // Allow navigation
     next()
   }
 })

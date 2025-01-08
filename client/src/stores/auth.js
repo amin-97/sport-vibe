@@ -1,7 +1,7 @@
 // src/stores/auth.js
 import { defineStore } from 'pinia'
 import { auth, googleProvider } from '@/config/firebase'
-import { signInWithPopup } from 'firebase/auth'
+import { signInWithPopup, onAuthStateChanged } from 'firebase/auth'
 import axios from 'axios'
 import api from '@/utils/axios'
 
@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     token: null,
-    loading: false,
+    loading: true,
     error: null,
   }),
 
@@ -59,15 +59,45 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // Initialize auth state from localStorage
     initializeAuth() {
-      const token = localStorage.getItem('token')
-      const user = localStorage.getItem('user')
-      if (token && user) {
-        this.token = token
-        this.user = JSON.parse(user)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      }
+      return new Promise((resolve) => {
+        // Listen for Firebase auth state changes
+        onAuthStateChanged(auth, async (firebaseUser) => {
+          if (firebaseUser) {
+            try {
+              // Get token and user data from localStorage first
+              const token = localStorage.getItem('token')
+              const userData = localStorage.getItem('user')
+
+              if (token && userData) {
+                this.token = token
+                this.user = JSON.parse(userData)
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+              } else {
+                // If no local data, re-authenticate with backend
+                const { data } = await api.post('/api/auth/google', {
+                  googleId: firebaseUser.uid,
+                  email: firebaseUser.email,
+                  displayName: firebaseUser.displayName,
+                  photoURL: firebaseUser.photoURL,
+                })
+
+                this.user = data.user
+                this.token = data.token
+                axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+                localStorage.setItem('token', data.token)
+                localStorage.setItem('user', JSON.stringify(data.user))
+              }
+            } catch (error) {
+              console.error('Auth initialization error:', error)
+              this.error = error.message
+            }
+          }
+          this.loading = false
+          resolve()
+        })
+      })
     },
   },
 })
