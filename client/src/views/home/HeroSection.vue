@@ -5,7 +5,6 @@
         <HeroContent />
         <div class="mt-6 lg:mt-0 lg:ml-8">
           <Suspense>
-            <HeroSlideshow />
             <template #fallback>
               <div class="animate-pulse bg-gray-700 h-64 rounded-lg"></div>
             </template>
@@ -18,5 +17,4 @@
 
 <script setup>
 import HeroContent from './HeroContent.vue'
-import HeroSlideshow from '@/components/HeroSlideshow.vue'
 </script>
