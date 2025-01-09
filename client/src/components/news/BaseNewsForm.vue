@@ -119,7 +119,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import EditorForm from '@/components/EditorForm.vue'
-import axios from 'axios'
+import api from '@/utils/axios'
 import { debounce } from 'lodash'
 
 const props = defineProps({
@@ -226,7 +226,7 @@ const autoSave = debounce(async () => {
     console.log('Method:', method)
     console.log('FormData contents:', Object.fromEntries(formData))
 
-    const response = await axios[method](endpoint, formData, {
+    const response = await api[method](endpoint, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -253,56 +253,6 @@ const autoSave = debounce(async () => {
     isSaving.value = false
   }
 }, 2000)
-
-// const autoSave = debounce(async () => {
-//   if (!newsData.value.title.trim()) return // Don't save if no title
-
-//   try {
-//     isSaving.value = true
-//     saveStatus.value = 'Saving...'
-
-//     const formData = new FormData()
-
-//     // Append all fields
-//     formData.append('title', newsData.value.title)
-//     formData.append('category', newsData.value.category || '')
-//     formData.append('description', newsData.value.description || '')
-//     formData.append('content', newsData.value.content || '')
-//     formData.append('tags', JSON.stringify(newsData.value.tags))
-//     formData.append('status', 'draft')
-
-//     // Only append image if it's new or changed
-//     if (newsData.value.image && !draftId.value) {
-//       formData.append('image', newsData.value.image)
-//     }
-
-//     const token = localStorage.getItem('token')
-//     const endpoint = draftId.value ? `${props.apiEndpoint}/${draftId.value}` : props.apiEndpoint
-//     const method = draftId.value ? 'put' : 'post'
-
-//     const response = await axios[method](endpoint, formData, {
-//       headers: {
-//         'Content-Type': 'multipart/form-data',
-//         Authorization: `Bearer ${token}`,
-//       },
-//       baseURL: 'http://localhost:5000',
-//     })
-
-//     // Update draftId if this was the first save
-//     if (!draftId.value && response.data._id) {
-//       draftId.value = response.data._id
-//     }
-
-//     lastSaved.value = new Date()
-//     hasUnsavedChanges.value = false
-//     saveStatus.value = `Last saved at ${formatTime(lastSaved.value)}`
-//   } catch (error) {
-//     console.error('Error auto-saving:', error)
-//     saveStatus.value = 'Error saving'
-//   } finally {
-//     isSaving.value = false
-//   }
-// }, 2000)
 
 const removeTag = (index) => {
   newsData.value.tags.splice(index, 1)
@@ -375,7 +325,7 @@ const handlePublish = async () => {
 
     const token = localStorage.getItem('token')
 
-    const response = await axios.post(props.apiEndpoint, formData, {
+    const response = await api.post(props.apiEndpoint, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -425,7 +375,7 @@ const handleSaveAsDraft = async () => {
 
     const token = localStorage.getItem('token')
 
-    const response = await axios.post(props.apiEndpoint, formData, {
+    const response = await api.post(props.apiEndpoint, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
