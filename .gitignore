@@ -1,3 +1,4 @@
 node_modules
 # Add if you want to keep the Excel files in version control
 data
+.env
