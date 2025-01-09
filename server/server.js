@@ -19,10 +19,7 @@ const app = express();
 // CORS configuration
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? ["https://sport-vibe.onrender.com", "http://localhost:5173"]
-        : "http://localhost:5173",
+    origin: "https://sport-vibe.onrender.com",
     credentials: true,
   })
 );

@@ -1,12 +1,9 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.PROD
-    ? 'https://sport-vibe-api.onrender.com'
-    : import.meta.env.VITE_API_URL,
+  baseURL: 'https://sport-vibe-api.onrender.com',
   withCredentials: true,
 })
-
 // Add request interceptor to add auth token
 axiosInstance.interceptors.request.use(
   (config) => {
