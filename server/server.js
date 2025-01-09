@@ -21,9 +21,13 @@ app.use(
   cors({
     origin: "https://sport-vibe.onrender.com",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Move this before any routes
+app.options("*", cors());
 // Middleware
 app.use(express.json());
 
