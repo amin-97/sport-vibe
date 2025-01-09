@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
-const testRoutes = require("./routes/test/s3test");
 
 // Import models for DB check
 const ActivePlayerCareerStats = require("./models/ActivePlayerCareerStats");
@@ -88,7 +87,7 @@ mongoose
 // Routes
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes);
-app.use("/api/test", testRoutes);
+// app.use("/api/test", testRoutes);
 
 const wrestlingResultsRoutes = require("./routes/api/wrestlingResults");
 app.use("/api/wrestling-results", wrestlingResultsRoutes);
@@ -114,6 +113,9 @@ const teamDetails = require("./routes/api/teamDetails");
 app.use("/api/team-details", teamDetails);
 const commonTeamRoster = require("./routes/api/commonTeamRoster");
 app.use("/api/common-team-roster", commonTeamRoster);
+
+const trades = require("./routes/api/trades");
+app.use("/api/trades", trades);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {

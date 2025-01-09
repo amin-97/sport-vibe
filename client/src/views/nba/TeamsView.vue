@@ -51,7 +51,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/utils/axios'
-import TeamPopUpModal from '@/components/TeamPopUpModal.vue'
+import TeamPopUpModal from '@/components/nba/TeamPopUpModal.vue'
 
 // Reactive state
 const teams = ref([])

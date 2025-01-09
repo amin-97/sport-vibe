@@ -42,6 +42,11 @@ const nbaFeatures = ref([
     description: 'Opinion pieces and analysis from NBA fans',
     link: '/nba/editorials',
   },
+  // {
+  //   title: 'Trade Simulator',
+  //   description: 'Extensive NBA trade machine to create your own trades',
+  //   link: '/nba/trade-simulator',
+  // },
 ])
 
 const wrestlingFeatures = ref([
