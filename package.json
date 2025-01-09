@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "cd server && node server.js",
     "build": "cd client && npm install && npm run build"
   },
   "dependencies": {
